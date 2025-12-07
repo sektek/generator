@@ -1,0 +1,15 @@
+services:
+  node-app-base:
+    image: node:22
+    restart: always
+    working_dir: /app
+    environment:
+      - DEV_PLATFORM=node
+      - REDIS_HOST=redis
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://grafana:4318
+      - OLTP_TRACE_EXPORTER_URL=http://grafana:4318/v1/traces
+      - OLTP_METRICS_EXPORTER_URL=http://grafana:4318/v1/traces
+      - LOKI_URL=http://grafana:3100
+    volumes:
+      - ../..:/workspaces:cached
+      - ../:/app
