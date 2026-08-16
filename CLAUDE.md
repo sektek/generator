@@ -11,7 +11,7 @@ but Nx is intentionally not used here (see Workspace layout) — treat it as dea
 
 ## Workspace layout
 
-npm workspaces defined in the root `package.json`: `generators/*`, `libs/*`, `tools/*`. Each package
+npm workspaces defined in the root `package.json`: `generators/*`, `libs/*`. Each package
 is an independently versioned, independently built TypeScript module with its own `package.json`,
 `tsconfig.json`/`tsconfig.build.json`, `.mocharc.cjs`, and `eslint.config.js` (mirroring the root
 configs).
@@ -50,9 +50,6 @@ hand: `libs/generator` first (everything else depends on it), then `libs/generat
   file (side-effect import registering the sub-generator).
 - **`generators/generator-js`** (`@sektek/generator-js`) — placeholder for a JS/TS project generator;
   not yet implemented.
-- **`tools/`** — vendored/local copies of `@sektek/eslint-plugin` and `@sektek/prettier-config` (each
-  its own git repo, published independently). Root `eslint.config.js` and `.prettierrc.js` at every
-  package level just import these.
 - **`templates/template-ts`** — a template project skeleton (its own package.json/tsconfig/etc.),
   intended as the boilerplate a generator scaffolds out, not a package that's built/tested itself.
 - **`third-party/`** — gitignored reference checkouts of `yeoman-generator` and `generator-jhipster`
@@ -144,3 +141,10 @@ the class instance. See `generators/generator-base/generators/*/index.spec.ts` f
 - `README.md`'s "Changes Required" section is a manual post-scaffold checklist for `.vscode/settings.json`
   (uncomment SQL connection, set name/database to the project name) — relevant when generating a new
   project from this generator, not when working in this repo itself.
+- `@sektek/eslint-plugin` and `@sektek/prettier-config` are regular devDependencies (every
+  `eslint.config.js`/`.prettierrc.js` in this repo is the same two-line wrapper importing them — see
+  Code style), published to GitHub Packages rather than the public npm registry. `npm install` needs
+  `@sektek:registry=https://npm.pkg.github.com` plus a `read:packages`-scoped token in `.npmrc`
+  (`//npm.pkg.github.com/:_authToken=...`) or it 401s. There's no local vendored fallback for these
+  anymore — they used to be checked out under `tools/eslint-plugin`/`tools/prettier-config` as npm
+  workspace packages, but that's gone; `tools/` is unused now.
