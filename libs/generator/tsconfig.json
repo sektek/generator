@@ -21,6 +21,6 @@
     "strictPropertyInitialization": true,
     "esModuleInterop": true,
     "importHelpers": true,
-    "types": ["chai", "chai-as-promised", "mocha", "node", "sinon", "sinon-chai"]
+    "types": ["mocha", "node"]
   }
 }
