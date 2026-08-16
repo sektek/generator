@@ -12,6 +12,27 @@ const DEFAULT_FEATURES: Partial<CoreFeatures> = {
   taskPrefix: 'task',
 };
 
+// yeoman-generator's built-in priority names are lowercase single words
+// (initializing, writing, ...), and taskPrefix matching does a literal
+// `${taskPrefix}${priorityName}` concatenation with no capitalization, so
+// task methods would otherwise have to be named e.g. `taskwriting`. These
+// alias each built-in queue under a PascalCase priorityName pointing at
+// the *same* queueName, so `taskWriting` runs at the same point in the
+// lifecycle a plain `taskwriting` would have. Registering an alias for an
+// already-registered queueName is a no-op (see Environment#addPriority),
+// so this doesn't create a second run queue.
+const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
+  { priorityName: 'Initializing', queueName: 'initializing' },
+  { priorityName: 'Prompting', queueName: 'prompting' },
+  { priorityName: 'Configuring', queueName: 'configuring' },
+  { priorityName: 'Default', queueName: 'default' },
+  { priorityName: 'Writing', queueName: 'writing' },
+  { priorityName: 'Transform', queueName: 'transform' },
+  { priorityName: 'Conflicts', queueName: 'conflicts' },
+  { priorityName: 'Install', queueName: 'install' },
+  { priorityName: 'End', queueName: 'end' },
+];
+
 // Matches yeoman-generator's own composeWith overloads for passing a
 // Generator class directly (rather than a namespace/path string). The
 // constructor itself is intentionally untyped here — narrowing it further
@@ -37,6 +58,7 @@ export abstract class CoreGenerator<
         ...(features ?? ({} as F)),
       },
     );
+    this.registerPriorities(PRIORITY_ALIASES);
   }
 
   // These overloads mirror yeoman-generator's own composeWith overloads

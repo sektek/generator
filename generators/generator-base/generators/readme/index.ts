@@ -18,7 +18,7 @@ export class ReadmeGenerator extends BaseGenerator<BaseOptions, BaseFeatures> {
     });
   }
 
-  taskwriting() {
+  taskWriting() {
     this.fs.copyTpl(
       this.templatePath('README.md.ejs'),
       this.destinationPath('README.md'),

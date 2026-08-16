@@ -23,7 +23,7 @@ export class GitConfigGenerator extends BaseGenerator<
     });
   }
 
-  taskwriting() {
+  taskWriting() {
     templates.forEach(template => {
       this.fs.copyTpl(
         this.templatePath(`${template}.ejs`),
