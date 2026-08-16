@@ -9,23 +9,20 @@ const DEFAULT_OPTIONS: Partial<CoreOptions> = {
 };
 const DEFAULT_FEATURES: Partial<CoreFeatures> = {
   inheritTasks: true,
-  taskPrefix: 'task'
+  taskPrefix: 'task',
 };
-const QUEUES = [
-  'initializing',
-  'prompting',
-  'configuring',
-  'default',
-  'writing',
-  'transform',
-  'conflicts',
-  'install',
-  'end',
-];
 
-const capitalize = (str: string) => str && str.charAt(0).toUpperCase() + str.slice(1);
+// Matches yeoman-generator's own composeWith overloads for passing a
+// Generator class directly (rather than a namespace/path string). The
+// constructor itself is intentionally untyped here — narrowing it further
+// would mean depending on @yeoman/types' internal generator-constructor
+// shape, which isn't part of this package's public dependency surface.
+type GeneratorConstructorRef = { Generator: unknown; path: string };
 
-export abstract class CoreGenerator<O extends CoreOptions, F extends CoreFeatures> extends Generator<O, F> {
+export abstract class CoreGenerator<
+  O extends CoreOptions,
+  F extends CoreFeatures,
+> extends Generator<O, F> {
   package: string | null = null;
 
   constructor(args: string | string[], options: O, features?: F) {
@@ -37,52 +34,64 @@ export abstract class CoreGenerator<O extends CoreOptions, F extends CoreFeature
       },
       {
         ...DEFAULT_FEATURES,
-        ...(features ?? {} as F),
-      }
+        ...(features ?? ({} as F)),
+      },
     );
   }
 
+  // These overloads mirror yeoman-generator's own composeWith overloads
+  // (options: Partial<GetGeneratorOptions<G>> upstream), which are keyed
+  // off each call's own generic G rather than this class's O. Narrowing
+  // the options parameters to Partial<O> breaks override-compatibility
+  // with the base class (TS2416) because the two generics don't unify;
+  // reproducing GetGeneratorOptions<G> here would mean depending on
+  // @yeoman/types' internals, which isn't part of this package's public
+  // dependency surface. `any` is kept deliberately, matching upstream.
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   async composeWith<G extends Generator = Generator>(
-    generator: string | { Generator: any; path: string },
-    immediately?: boolean
+    generator: string | GeneratorConstructorRef,
+    immediately?: boolean,
   ): Promise<G>;
   async composeWith<G extends Generator = Generator>(
     generator: string[],
-    immediately?: boolean
+    immediately?: boolean,
   ): Promise<G[]>;
   async composeWith<G extends Generator = Generator>(
-    generator: string | { Generator: any; path: string },
+    generator: string | GeneratorConstructorRef,
     options: Partial<any>,
-    immediately?: boolean
+    immediately?: boolean,
   ): Promise<G>;
   async composeWith<G extends Generator = Generator>(
     generator: string[],
     options: Partial<any>,
-    immediately?: boolean
+    immediately?: boolean,
   ): Promise<G[]>;
   async composeWith<G extends Generator = Generator>(
-    generator: string | { Generator: any; path: string },
+    generator: string | GeneratorConstructorRef,
     args: string[],
     options?: Partial<any>,
-    immediately?: boolean
+    immediately?: boolean,
   ): Promise<G>;
   async composeWith<G extends Generator = Generator>(
     generator: string[],
     args: string[],
     options?: Partial<any>,
-    immediately?: boolean
+    immediately?: boolean,
   ): Promise<G[]>;
   async composeWith<G extends Generator = Generator>(
     generator: string,
-    options?: any
+    options?: Partial<any>,
   ): Promise<G[]>;
   async composeWith<G extends Generator = Generator>(
-    generator: string | string[] | { Generator: any; path: string },
-    argsOrOptionsOrImmediately?: string[] | Partial<O> | boolean | any,
-    optionsOrImmediately?: Partial<O> | boolean | any,
-    immediately = false
+    generator: string | string[] | GeneratorConstructorRef,
+    argsOrOptionsOrImmediately?: string[] | Partial<any> | boolean,
+    optionsOrImmediately?: Partial<any> | boolean,
+    immediately = false,
   ): Promise<G | G[]> {
-    if (optionsOrImmediately !== undefined && typeof optionsOrImmediately !== 'boolean') {
+    if (
+      optionsOrImmediately !== undefined &&
+      typeof optionsOrImmediately !== 'boolean'
+    ) {
       optionsOrImmediately = {
         ...DEFAULT_OPTIONS,
         ...optionsOrImmediately,
@@ -94,13 +103,14 @@ export abstract class CoreGenerator<O extends CoreOptions, F extends CoreFeature
     }
 
     // Call parent with the same parameters
-    return await super.composeWith(
+    return (await super.composeWith(
       generator as any,
       argsOrOptionsOrImmediately as any,
       optionsOrImmediately as any,
-      immediately
-    ) as any;
+      immediately,
+    )) as any;
   }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   #rewriteGeneratorName(generatorName: string): string {
     if (this.package === null) {
