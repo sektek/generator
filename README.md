@@ -1,37 +1,8 @@
-# Project Name
+# SEKTEK Generator
 
-Brief Description
+Code generator for SEKTEK projects.
 
 ## Changes Required
-
-### `.devcontainer/devcontainer.json`
-
-- Set Project Name in
-  - `name`
-  - `workspaceFolder`
-  - `remoteEnv.COMPOSE_PROJECT_NAME`
-
-### `.devcontainer/docker-compose.yml`
-
-- Set Project Name
-
-## Enable Redis
-
-### `.devcontainer/docker-compose.yml`
-
-- Uncomment `redis` service
-- Uncomment `redis` volume
-
-## Enable Postgres
-
-### `.devcontainer/docker-compose.yml`
-
-- Uncomment `db` service
-- Uncomment `postgres` volume
-
-### `.devcontainer/docker/postgres.init.sql`
-
-- Set DB Name to project name
 
 ### `.vscode/settings.json`
 

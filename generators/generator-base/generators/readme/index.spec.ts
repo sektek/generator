@@ -1,0 +1,22 @@
+import { dirname, join } from 'path';
+import { expect } from 'chai';
+import { fileURLToPath } from 'url';
+import { helper } from '@sektek/generator-test';
+
+import { ReadmeGenerator } from './index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const generator = join(__dirname, 'index.ts');
+
+describe('@sektek/base:readme', () => {
+  it('generates using ReadmeGenerator', async function () {
+    const result = await helper.run(generator);
+    expect(result.generator).to.be.instanceOf(ReadmeGenerator);
+  });
+
+  it('generates a README.md', async function () {
+    const { fs } = await helper.run(generator);
+    expect(fs.exists('README.md')).to.be.true;
+  });
+});

@@ -1,10 +1,15 @@
 {
-  "name": "Generator",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "system",
-  "workspaceFolder": "/workspace",
+  "name": "Project Name",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "workspaceFolder": "/workspaces/project-name",
   "shutdownAction": "none",
-  "features": {},
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false
+    }
+  },
   "customizations": {
     "vscode": {
       "settings": {
@@ -15,6 +20,7 @@
         "EditorConfig.EditorConfig",
         "eamodio.gitlens",
         "esbenp.prettier-vscode",
+        "GitHub.copilot",
         "GitHub.copilot-chat",
         "GitHub.vscode-pull-request-github",
         "github.vscode-github-actions",
@@ -23,12 +29,15 @@
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
         "nrwl.angular-console",
-        "ryanluker.vscode-coverage-gutters"
+        "Postman.postman-for-vscode",
+        "ryanluker.vscode-coverage-gutters",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "VisualStudioExptTeam.intellicode-api-usage-examples"
       ]
     }
   },
   "remoteEnv": {
-    "COMPOSE_PROJECT_NAME": "generator",
-    "HOST_PROJECT_PATH": "${localWorkspaceFolder}"
+    "HOST_PROJECT_PATH": "${localWorkspaceFolder}",
+    "GH_TOKEN": "${localEnv:GH_TOKEN}"
   }
 }
