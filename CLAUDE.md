@@ -58,9 +58,16 @@ hand: `libs/generator` first (everything else depends on it), then `libs/generat
 
 - Generator packages export a default class per sub-generator directory, matching Yeoman's
   `generators/<name>/index.js` discovery convention.
-- Lifecycle/queue methods are named `task<Capitalized QueueName>` (`taskInitializing`, `taskPrompting`,
-  `taskConfiguring`, `taskWriting`, `taskTransform`, `taskConflicts`, `taskInstall`, `taskEnd`) rather
-  than bare queue names — this is enabled by the `taskPrefix`/`inheritTasks` defaults in `CoreGenerator`.
+- Lifecycle/queue methods are *intended* to be named `task<QueueName>` (`CoreGenerator` sets
+  `taskPrefix: 'task'`), but **every existing sub-generator gets this wrong and is currently broken**:
+  yeoman-generator's `taskPrefix` matching does `` `${taskPrefix}${queueName}` `` against the raw,
+  lowercase priority name (`writing`, `initializing`, …) — it does not capitalize. So it looks for a
+  literal `taskwriting`, not the `taskWriting` these generators actually define. The mismatch means
+  none of their lifecycle methods are ever discovered, and running them throws `This Generator is
+  empty. Add at least one method for it to run.` (see `generators/generator-base/generators/gitconfig/index.spec.ts`
+  failures). Until this is fixed, either rename methods to the fully-lowercase form (`taskwriting`) or
+  fix the matching. The `QUEUES` constant in `libs/generator/src/core-generator.ts` looks like it was
+  meant to register capitalized custom priorities but is unused dead code.
 - `composeWith` calls generator names unqualified (e.g. `'editorconfig'`) and relies on the owning
   generator's `package` field for namespacing — don't hardcode the `@sektek/base:` prefix by hand.
 - Templates for a sub-generator live in `generators/<name>/templates/*.ejs`, referenced via
@@ -98,6 +105,19 @@ pattern.
   out how to test generators in TypeScript"). The only root script (`build`) shells out to Nx and
   should not be used — see Workspace layout.
 - `generators/generator-js` and `generators/generator-base/index.ts` are empty stubs.
+- **`generators/generator-base` is currently 7/8 tests failing** (only its own placeholder spec
+  passes). Three separate causes, all in the sub-generator specs/sources, not the test runner:
+  1. The `task<Xxx>` naming mismatch described above (`gitconfig` fails on this — "This Generator is
+     empty").
+  2. `readme/index.ts` never `export default`s `ReadmeGenerator`, so instantiating it throws
+     `The generator doesn't provides a constructor`.
+  3. `editorconfig/index.spec.ts` invokes generators by namespace/bare-name
+     (`helper.run('@sektek/base:editorconfig')`, `helper.run('editorconfig')`), but `@sektek/generator-test`'s
+     shared `helper` has no generators registered, so neither form resolves. `gitconfig`/`readme`'s specs
+     work around this by passing an absolute path to their own `index.js`/`.ts` — follow that pattern for
+     new specs until the shared helper gains real registration/lookup support.
+- `libs/generator` and `libs/generator-test` have no real test coverage yet — their specs are
+  placeholders (`it('should be tested')`).
 - `README.md`'s "Changes Required" section is a manual post-scaffold checklist for `.vscode/settings.json`
   (uncomment SQL connection, set name/database to the project name) — relevant when generating a new
   project from this generator, not when working in this repo itself.

@@ -19,7 +19,7 @@ export class AppGenerator extends BaseGenerator<BaseOptions, BaseFeatures> {
     super(args, options, { ...DEFAULT_FEATURES, ...features });
   }
 
-  async taskInitializing(_generator: unknown, options: BaseOptions) {
+  async taskinitializing(_generator: unknown, options: BaseOptions) {
     await this.composeWith('editorconfig', options, true);
     await this.composeWith('gitconfig', options, true);
     await this.composeWith('readme', options, true);

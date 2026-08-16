@@ -7,7 +7,7 @@ import { ReadmeGenerator } from './index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const generator = join(__dirname, 'index.ts');
+const generator = join(__dirname, 'index.js');
 
 describe('@sektek/base:readme', () => {
   it('generates using ReadmeGenerator', async function () {

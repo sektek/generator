@@ -21,7 +21,7 @@ export class EditorConfigGenerator extends BaseGenerator<
     });
   }
 
-  taskWriting() {
+  taskwriting() {
     this.fs.copyTpl(
       this.templatePath('editorconfig.ejs'),
       this.destinationPath('.editorconfig'),
