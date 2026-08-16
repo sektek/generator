@@ -40,10 +40,10 @@ hand: `libs/generator` first (everything else depends on it), then `libs/generat
 
   When adding a new sub-generator here, follow the existing pattern: extend `BaseGenerator<BaseOptions, BaseFeatures>`,
   set `DEFAULT_FEATURES = { unique: true }` merged with incoming features, implement lifecycle
-  methods as `task<QueueName>` (e.g. `taskWriting`, `taskInitializing`) — this works because
-  `CoreGenerator`'s default features set `taskPrefix: 'task'` and `inheritTasks: true`. Register it
-  in `app/index.ts`'s `taskInitializing` and add its import at the top of that file (side-effect
-  import registering the sub-generator).
+  methods as `task<queueName>` (e.g. `taskwriting`, `taskinitializing` — lowercase, see Generator
+  wiring conventions below for why) — this works because `CoreGenerator`'s default features set
+  `taskPrefix: 'task'` and `inheritTasks: true`. Register it in `app/index.ts`'s `taskinitializing`
+  and add its import at the top of that file (side-effect import registering the sub-generator).
 - **`generators/generator-js`** (`@sektek/generator-js`) — placeholder for a JS/TS project generator;
   not yet implemented.
 - **`tools/`** — vendored/local copies of `@sektek/eslint-plugin` and `@sektek/prettier-config` (each
@@ -58,16 +58,15 @@ hand: `libs/generator` first (everything else depends on it), then `libs/generat
 
 - Generator packages export a default class per sub-generator directory, matching Yeoman's
   `generators/<name>/index.js` discovery convention.
-- Lifecycle/queue methods are *intended* to be named `task<QueueName>` (`CoreGenerator` sets
-  `taskPrefix: 'task'`), but **every existing sub-generator gets this wrong and is currently broken**:
-  yeoman-generator's `taskPrefix` matching does `` `${taskPrefix}${queueName}` `` against the raw,
-  lowercase priority name (`writing`, `initializing`, …) — it does not capitalize. So it looks for a
-  literal `taskwriting`, not the `taskWriting` these generators actually define. The mismatch means
-  none of their lifecycle methods are ever discovered, and running them throws `This Generator is
-  empty. Add at least one method for it to run.` (see `generators/generator-base/generators/gitconfig/index.spec.ts`
-  failures). Until this is fixed, either rename methods to the fully-lowercase form (`taskwriting`) or
-  fix the matching. The `QUEUES` constant in `libs/generator/src/core-generator.ts` looks like it was
-  meant to register capitalized custom priorities but is unused dead code.
+- Lifecycle/queue methods are named `task<queueName>` — e.g. `taskwriting`, `taskinitializing` — using
+  the queue name's own casing verbatim (`CoreGenerator` sets `taskPrefix: 'task'`). yeoman-generator's
+  `taskPrefix` matching does `` `${taskPrefix}${queueName}` `` with **no capitalization inserted**, so
+  for the built-in priorities (`initializing`, `prompting`, `configuring`, `default`, `writing`,
+  `transform`, `conflicts`, `install`, `end` — all single lowercase words) the method name ends up
+  fully lowercase. It's an easy trap: a PascalCase method like `taskWriting` silently matches nothing
+  (no error at define time) and the generator throws `This Generator is empty. Add at least one method
+  for it to run.` the moment it runs. The `QUEUES` constant in `libs/generator/src/core-generator.ts`
+  is unused dead code — it does not register these as custom priorities.
 - `composeWith` calls generator names unqualified (e.g. `'editorconfig'`) and relies on the owning
   generator's `package` field for namespacing — don't hardcode the `@sektek/base:` prefix by hand.
 - Templates for a sub-generator live in `generators/<name>/templates/*.ejs`, referenced via
@@ -94,10 +93,11 @@ Run from the repo root unless noted. Do not use the root `npm run build` script 
 ## Test conventions
 
 Specs sit next to source as `*.spec.ts` and use `chai` (`expect`) + `@sektek/generator-test`'s shared
-`helper.run(...)`. For generator specs, `helper.run('<sub-generator-name>')` (or the fully-qualified
-`'@sektek/base:<name>'`) returns `{ generator, fs }`; assert `fs.exists(...)` for scaffolded files and
-`generator` for the class instance. See `generators/generator-base/generators/*/index.spec.ts` for the
-pattern.
+`helper.run(...)`. Invoke the generator under test by absolute path
+(`helper.run(join(__dirname, 'index.js'))`), not by namespace or bare name — see Known gaps below for
+why. This returns `{ generator, fs }`; assert `fs.exists(...)` for scaffolded files and `generator` for
+the class instance. See `generators/generator-base/generators/*/index.spec.ts` for the pattern, and
+`generators/generator-base/generators/app/index.spec.ts` for one that also composes sub-generators.
 
 ## Known gaps (don't be surprised)
 
@@ -105,17 +105,20 @@ pattern.
   out how to test generators in TypeScript"). The only root script (`build`) shells out to Nx and
   should not be used — see Workspace layout.
 - `generators/generator-js` and `generators/generator-base/index.ts` are empty stubs.
-- **`generators/generator-base` is currently 7/8 tests failing** (only its own placeholder spec
-  passes). Three separate causes, all in the sub-generator specs/sources, not the test runner:
-  1. The `task<Xxx>` naming mismatch described above (`gitconfig` fails on this — "This Generator is
-     empty").
-  2. `readme/index.ts` never `export default`s `ReadmeGenerator`, so instantiating it throws
-     `The generator doesn't provides a constructor`.
-  3. `editorconfig/index.spec.ts` invokes generators by namespace/bare-name
-     (`helper.run('@sektek/base:editorconfig')`, `helper.run('editorconfig')`), but `@sektek/generator-test`'s
-     shared `helper` has no generators registered, so neither form resolves. `gitconfig`/`readme`'s specs
-     work around this by passing an absolute path to their own `index.js`/`.ts` — follow that pattern for
-     new specs until the shared helper gains real registration/lookup support.
+- `@sektek/generator-test`'s shared `helper` has nothing registered with it by default — a bare
+  `helper.run('editorconfig')` or `helper.run('@sektek/base:editorconfig')` won't resolve. Specs invoke
+  their own generator by absolute path (`join(__dirname, 'index.js')`); a spec that needs `composeWith`
+  to actually resolve sibling namespaces (like `app`'s) must register them explicitly first via
+  `.withGenerators([[path, { namespace }], ...])` — see `generators/generator-base/generators/app/index.spec.ts`.
+  Registering a sub-generator by class reference instead of file path loses its on-disk location, which
+  breaks `templatePath()`/`sourceRoot()` resolution — always register by path.
+- **Cross-package changes to `libs/generator` (or any package other packages depend on) don't take
+  effect for dependents until you rebuild it.** `generator-base` imports `@sektek/generator` through
+  `node_modules/@sektek/generator`, which resolves via that package's `package.json` `exports` to its
+  built `dist/`, not its TypeScript source — unlike a package's own `.spec.ts` files, which `tsx/esm`
+  transforms live. Editing `libs/generator/src/*.ts` without running its `build` script first will
+  silently leave dependents running the old compiled behavior; tests can pass or fail against stale
+  logic with no indication anything is out of sync.
 - `libs/generator` and `libs/generator-test` have no real test coverage yet — their specs are
   placeholders (`it('should be tested')`).
 - `README.md`'s "Changes Required" section is a manual post-scaffold checklist for `.vscode/settings.json`

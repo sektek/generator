@@ -113,7 +113,6 @@ export abstract class CoreGenerator<O extends CoreOptions, F extends CoreFeature
   }
 
   #generatorIsFullyQualified(generatorName: string): boolean {
-    return true;
-    // return generatorName.includes(':');
+    return generatorName.includes(':');
   }
 }
