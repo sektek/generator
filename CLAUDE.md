@@ -81,6 +81,17 @@ hand: `libs/generator` first (everything else depends on it), then `libs/generat
 - Templates for a sub-generator live in `generators/<name>/templates/*.ejs`, referenced via
   `this.templatePath('<file>.ejs')`.
 
+## Code style
+
+Imports are grouped into up to three blocks, separated by a blank line, in this order: Node built-ins
+(`path`, `url`, …), then dependencies (npm packages and local workspace packages alike — e.g. `chai`
+and `@sektek/generator-test` are the same block), then local relative imports (`./index.js`,
+`../lib/foo.js`). Enforced by `import/order` (`groups: ['builtin', ['external', 'internal'],
+['parent', 'sibling', 'index']]`, `newlines-between: 'always'`) in every package's `eslint.config.js`;
+`sort-imports` (already configured with `allowSeparatedGroups: true`) alphabetizes by first imported
+binding name within each block. Run the package's `lint` script (with `--fix` for prettier/import-order
+issues) to check and fix.
+
 ## Commands
 
 Run from the repo root unless noted. Do not use the root `npm run build` script or any `nx` command
