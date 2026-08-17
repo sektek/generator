@@ -1,15 +1,18 @@
-import { basename } from 'path';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+
 import { expect } from 'chai';
-// import { fileURLToPath } from 'url';
 import { helper } from '@sektek/generator-test';
 
 import { EditorConfigGenerator } from './index.js';
 
-const generator = basename(import.meta.dirname);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const generator = join(__dirname, 'index.js');
 
 describe('@sektek/base:editorconfig', function () {
   it('generates using EditorConfigGenerator', async function () {
-    const result = await helper.run(`@sektek/base:${generator}`);
+    const result = await helper.run(generator);
     expect(result.generator).to.be.instanceOf(EditorConfigGenerator);
   });
 

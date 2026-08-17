@@ -1,6 +1,7 @@
 import { dirname, join } from 'path';
-import { expect } from 'chai';
 import { fileURLToPath } from 'url';
+
+import { expect } from 'chai';
 import { helper } from '@sektek/generator-test';
 
 import { GitConfigGenerator } from './index.js';

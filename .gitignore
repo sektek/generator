@@ -288,7 +288,4 @@ tmp/
 
 .nx/
 
-tools/eslint-plugin/
-tools/prettier-config/
-
 third-party/
