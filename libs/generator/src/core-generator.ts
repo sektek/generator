@@ -40,15 +40,25 @@ const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
 // shape, which isn't part of this package's public dependency surface.
 type GeneratorConstructorRef = { Generator: unknown; path: string };
 
+// yeoman-generator's Generator takes a leading ConfigType generic ahead of
+// Options/Features (matching its own `Record<any, any>` default); this
+// package doesn't expose a config type of its own, so it's fixed to that
+// default here rather than widening CoreGenerator's own public generic
+// surface.
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export abstract class CoreGenerator<
   O extends CoreOptions,
   F extends CoreFeatures,
-> extends Generator<O, F> {
+> extends Generator<Record<any, any>, O, F> {
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   package: string | null = null;
 
   constructor(args: string | string[], options: O, features?: F) {
     super(
-      args,
+      // yeoman-generator's own constructor types this as string[] only, but
+      // still accepts (and this codebase relies on) a single string at
+      // runtime — see PRIORITY_ALIASES/callers passing either form.
+      args as string[],
       {
         ...DEFAULT_OPTIONS,
         ...options,
