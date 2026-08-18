@@ -1,5 +1,6 @@
 import Generator from 'yeoman-generator/typed';
 
+import { CoreConfig } from './types/core-config.js';
 import { CoreFeatures } from './types/core-features.js';
 import { CoreOptions } from './types/core-options.js';
 
@@ -41,16 +42,15 @@ const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
 type GeneratorConstructorRef = { Generator: unknown; path: string };
 
 // yeoman-generator's Generator takes a leading ConfigType generic ahead of
-// Options/Features (matching its own `Record<any, any>` default); this
-// package doesn't expose a config type of its own, so it's fixed to that
-// default here rather than widening CoreGenerator's own public generic
-// surface.
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// Options/Features (its own persisted-config Storage, backed by
+// .yo-rc.json); C defaults to CoreConfig, mirroring how O/F default on
+// BaseGenerator, so existing two-arg usages (CoreGenerator<O, F>) are
+// unaffected.
 export abstract class CoreGenerator<
   O extends CoreOptions,
   F extends CoreFeatures,
-> extends Generator<Record<any, any>, O, F> {
-  /* eslint-enable @typescript-eslint/no-explicit-any */
+  C extends CoreConfig = CoreConfig,
+> extends Generator<C, O, F> {
   package: string | null = null;
 
   constructor(args: string | string[], options: O, features?: F) {

@@ -1,6 +1,7 @@
 import { CoreGenerator } from '@sektek/generator';
 import latestVersion from 'latest-version';
 
+import { BaseConfig } from './types/base-config.js';
 import { BaseFeatures } from './types/base-features.js';
 import { BaseOptions } from './types/base-options.js';
 
@@ -14,7 +15,8 @@ const DEFAULT_OPTIONS: Partial<BaseOptions> = {
 export class BaseGenerator<
   O extends BaseOptions = BaseOptions,
   F extends BaseFeatures = BaseFeatures,
-> extends CoreGenerator<O, F> {
+  C extends BaseConfig = BaseConfig,
+> extends CoreGenerator<O, F, C> {
   package = '@sektek/js';
   dependencies: Record<string, string> = {};
   devDependencies: Record<string, string> = {};
