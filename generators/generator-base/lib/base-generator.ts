@@ -11,7 +11,7 @@ export class BaseGenerator<
 > extends CoreGenerator<O, F, C> {
   package = '@sektek/base';
 
-  constructor(args: string | string[], options: O, features?: F) {
+  constructor(args: string[], options: O, features?: F) {
     super(args, options, features);
   }
 }

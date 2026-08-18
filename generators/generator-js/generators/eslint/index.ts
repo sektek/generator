@@ -16,7 +16,7 @@ export const LINT_SCRIPT = 'eslint . --cache';
 
 export class EslintGenerator extends BaseGenerator<BaseOptions, BaseFeatures> {
   constructor(
-    args: string | string[],
+    args: string[],
     options: BaseOptions,
     features: BaseFeatures = {} as BaseFeatures,
   ) {

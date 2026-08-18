@@ -12,7 +12,7 @@ const DEFAULT_FEATURES: Partial<BaseFeatures> = {
 
 export class AppGenerator extends BaseGenerator<BaseOptions, BaseFeatures> {
   constructor(
-    args: string | string[],
+    args: string[],
     options: BaseOptions,
     features: BaseFeatures = {} as BaseFeatures,
   ) {

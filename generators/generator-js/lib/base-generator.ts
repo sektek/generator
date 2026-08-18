@@ -21,7 +21,7 @@ export class BaseGenerator<
   dependencies: Record<string, string> = {};
   devDependencies: Record<string, string> = {};
 
-  constructor(args: string | string[], options: O, features?: F) {
+  constructor(args: string[], options: O, features?: F) {
     super(args, { ...DEFAULT_OPTIONS, ...options }, features);
   }
 

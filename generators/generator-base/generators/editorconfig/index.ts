@@ -11,7 +11,7 @@ export class EditorConfigGenerator extends BaseGenerator<
   BaseFeatures
 > {
   constructor(
-    args: string | string[],
+    args: string[],
     options: BaseOptions,
     features: BaseFeatures = {} as BaseFeatures,
   ) {

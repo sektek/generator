@@ -53,12 +53,9 @@ export abstract class CoreGenerator<
 > extends Generator<C, O, F> {
   package: string | null = null;
 
-  constructor(args: string | string[], options: O, features?: F) {
+  constructor(args: string[], options: O, features?: F) {
     super(
-      // yeoman-generator's own constructor types this as string[] only, but
-      // still accepts (and this codebase relies on) a single string at
-      // runtime — see PRIORITY_ALIASES/callers passing either form.
-      args as string[],
+      args,
       {
         ...DEFAULT_OPTIONS,
         ...options,

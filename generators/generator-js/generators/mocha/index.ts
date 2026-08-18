@@ -12,7 +12,7 @@ export const TEST_MIN_SCRIPT = 'mocha --config .mocharc.min.cjs';
 
 export class MochaGenerator extends BaseGenerator<BaseOptions, BaseFeatures> {
   constructor(
-    args: string | string[],
+    args: string[],
     options: BaseOptions,
     features: BaseFeatures = {} as BaseFeatures,
   ) {

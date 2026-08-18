@@ -11,7 +11,7 @@ export class GitConfigGenerator extends BaseGenerator<
   BaseFeatures
 > {
   constructor(
-    args: string | string[],
+    args: string[],
     options: BaseOptions,
     features: BaseFeatures = {} as BaseFeatures,
   ) {
