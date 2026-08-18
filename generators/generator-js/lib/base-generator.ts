@@ -13,10 +13,10 @@ const DEFAULT_OPTIONS: Partial<BaseOptions> = {
 };
 
 export class BaseGenerator<
+  C extends BaseConfig = BaseConfig,
   O extends BaseOptions = BaseOptions,
   F extends BaseFeatures = BaseFeatures,
-  C extends BaseConfig = BaseConfig,
-> extends CoreGenerator<O, F, C> {
+> extends CoreGenerator<C, O, F> {
   package = '@sektek/js';
   dependencies: Record<string, string> = {};
   devDependencies: Record<string, string> = {};

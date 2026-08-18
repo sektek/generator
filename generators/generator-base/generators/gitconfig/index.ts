@@ -1,3 +1,4 @@
+import { BaseConfig } from '../../lib/types/base-config.js';
 import { BaseFeatures } from '../../lib/types/base-features.js';
 import { BaseGenerator } from '../../lib/base-generator.js';
 import { BaseOptions } from '../../lib/types/base-options.js';
@@ -9,6 +10,7 @@ const DEFAULT_FEATURES: Partial<BaseFeatures> = {
 };
 
 export class GitConfigGenerator extends BaseGenerator<
+  BaseConfig,
   BaseOptions,
   BaseFeatures
 > {

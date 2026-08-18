@@ -41,15 +41,10 @@ const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
 // shape, which isn't part of this package's public dependency surface.
 type GeneratorConstructorRef = { Generator: unknown; path: string };
 
-// yeoman-generator's Generator takes a leading ConfigType generic ahead of
-// Options/Features (its own persisted-config Storage, backed by
-// .yo-rc.json); C defaults to CoreConfig, mirroring how O/F default on
-// BaseGenerator, so existing two-arg usages (CoreGenerator<O, F>) are
-// unaffected.
 export abstract class CoreGenerator<
+  C extends CoreConfig,
   O extends CoreOptions,
   F extends CoreFeatures,
-  C extends CoreConfig = CoreConfig,
 > extends Generator<C, O, F> {
   package: string | null = null;
 

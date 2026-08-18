@@ -1,5 +1,6 @@
 import '../prettier/index.js';
 
+import { BaseConfig } from '../../lib/types/base-config.js';
 import { BaseFeatures } from '../../lib/types/base-features.js';
 import { BaseGenerator } from '../../lib/base-generator.js';
 import { BaseOptions } from '../../lib/types/base-options.js';
@@ -14,7 +15,11 @@ const TEMPLATES = {
 
 export const LINT_SCRIPT = 'eslint . --cache';
 
-export class EslintGenerator extends BaseGenerator<BaseOptions, BaseFeatures> {
+export class EslintGenerator extends BaseGenerator<
+  BaseConfig,
+  BaseOptions,
+  BaseFeatures
+> {
   constructor(
     args: string[],
     options: BaseOptions,

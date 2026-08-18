@@ -5,10 +5,10 @@ import { BaseFeatures } from './types/base-features.js';
 import { BaseOptions } from './types/base-options.js';
 
 export class BaseGenerator<
+  C extends BaseConfig = BaseConfig,
   O extends BaseOptions = BaseOptions,
   F extends BaseFeatures = BaseFeatures,
-  C extends BaseConfig = BaseConfig,
-> extends CoreGenerator<O, F, C> {
+> extends CoreGenerator<C, O, F> {
   package = '@sektek/base';
 
   constructor(args: string[], options: O, features?: F) {
