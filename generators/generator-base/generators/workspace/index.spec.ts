@@ -4,19 +4,18 @@ import { fileURLToPath } from 'url';
 import { expect } from 'chai';
 import { helper } from '@sektek/generator-test';
 
-import { AppGenerator } from './index.js';
+import { WorkspaceGenerator } from './index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const generator = join(__dirname, 'index.js');
 
-// AppGenerator composes its sub-generators by the namespace @sektek/base
-// rewrites them to (see CoreGenerator#composeWith). The shared test helper
-// has nothing registered under those namespaces by default, so each
-// sub-generator must be registered by path (so its templates/ dir still
-// resolves) under the namespace app will compose it as.
 const run = () =>
   helper.run(generator).withGenerators([
+    [
+      join(__dirname, '../devcontainer/index.js'),
+      { namespace: '@sektek/base:devcontainer' },
+    ],
     [
       join(__dirname, '../editorconfig/index.js'),
       { namespace: '@sektek/base:editorconfig' },
@@ -29,16 +28,12 @@ const run = () =>
       join(__dirname, '../readme/index.js'),
       { namespace: '@sektek/base:readme' },
     ],
-    [
-      join(__dirname, '../devcontainer/index.js'),
-      { namespace: '@sektek/base:devcontainer' },
-    ],
   ]);
 
-describe('@sektek/base:app', function () {
-  it('generates using AppGenerator', async function () {
+describe('@sektek/base:workspace', function () {
+  it('generates using WorkspaceGenerator', async function () {
     const result = await run();
-    expect(result.generator).to.be.instanceOf(AppGenerator);
+    expect(result.generator).to.be.instanceOf(WorkspaceGenerator);
   });
 
   it('composes the editorconfig generator', async function () {
@@ -52,15 +47,29 @@ describe('@sektek/base:app', function () {
     expect(fs.exists('.gitattributes')).to.be.true;
   });
 
-  it('composes the readme generator', async function () {
+  it('composes readme and appends the Changes Required checklist after it', async function () {
     const { fs } = await run();
     expect(fs.exists('README.md')).to.be.true;
+    const readme = fs.read('README.md');
+    expect(readme).to.include('## Changes Required');
+    expect(readme.indexOf('#')).to.be.lessThan(
+      readme.indexOf('## Changes Required'),
+    );
   });
 
-  it('composes the devcontainer generator with the default profile', async function () {
+  it('composes the devcontainer generator with the workspace profile', async function () {
     const { fs } = await run();
     expect(fs.exists('.devcontainer/devcontainer.json')).to.be.true;
+    expect(fs.read('.devcontainer/devcontainer.json')).to.include(
+      'dockerComposeFile',
+    );
+    expect(fs.exists('.devcontainer/docker-compose.yml')).to.be.true;
     expect(fs.exists('.devcontainer/Dockerfile')).to.be.true;
-    expect(fs.exists('.devcontainer/docker-compose.yml')).to.be.false;
+  });
+
+  it('generates .vscode/settings.json and .vscode/launch.json', async function () {
+    const { fs } = await run();
+    expect(fs.exists('.vscode/settings.json')).to.be.true;
+    expect(fs.exists('.vscode/launch.json')).to.be.true;
   });
 });

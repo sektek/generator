@@ -43,8 +43,16 @@ const run = (options: Record<string, unknown> = { language: 'javascript' }) =>
         { namespace: '@sektek/base:readme' },
       ],
       [
+        join(generatorBaseGenerators, 'devcontainer/index.js'),
+        { namespace: '@sektek/base:devcontainer' },
+      ],
+      [
         join(__dirname, '../base-package/index.js'),
         { namespace: '@sektek/js:base-package' },
+      ],
+      [
+        join(__dirname, '../devcontainer/index.js'),
+        { namespace: '@sektek/js:devcontainer' },
       ],
       [
         join(__dirname, '../gitconfig/index.js'),
@@ -99,6 +107,12 @@ describe('@sektek/js:app', function () {
   it('composes mocha', async function () {
     const { fs } = await run();
     expect(fs.exists('.mocharc.cjs')).to.be.true;
+  });
+
+  it('composes devcontainer, overriding the Dockerfile with the JS/TS-specific image', async function () {
+    const { fs } = await run();
+    expect(fs.exists('.devcontainer/devcontainer.json')).to.be.true;
+    expect(fs.read('.devcontainer/Dockerfile')).to.include('typescript-node');
   });
 
   it('composes typescript when language is typescript', async function () {
