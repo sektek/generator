@@ -12,6 +12,9 @@
   "main": "dist/generators/index.js",
 
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
