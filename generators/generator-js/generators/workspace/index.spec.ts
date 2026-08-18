@@ -86,11 +86,12 @@ describe('@sektek/js:workspace', function () {
     const { fs } = await run();
     const pkg = JSON.parse(fs.read('package.json'));
     expect(pkg.workspaces).to.deep.equal(['apps/*', 'libs/*', 'tools/*']);
-    expect(pkg.scripts.build).to.equal('nx run-many --target build');
+    expect(pkg.scripts.build).to.equal(
+      'npm run build --workspaces --if-present',
+    );
     expect(pkg.scripts.lint).to.equal('eslint . --cache');
     expect(pkg.devDependencies).to.have.property('eslint');
     expect(pkg.devDependencies).to.have.property('prettier');
-    expect(pkg.devDependencies).to.have.property('nx');
   });
 
   it('merges JS-specific keys into .vscode/settings.json alongside the base keys', async function () {
@@ -103,9 +104,8 @@ describe('@sektek/js:workspace', function () {
     expect(settings).to.include('"mochaExplorer.esmLoader": true');
   });
 
-  it('generates nx.json, .mocharc.cjs, and .npmrc', async function () {
+  it('generates .mocharc.cjs and .npmrc', async function () {
     const { fs } = await run();
-    expect(fs.exists('nx.json')).to.be.true;
     expect(fs.exists('.mocharc.cjs')).to.be.true;
     expect(fs.exists('.npmrc')).to.be.true;
   });

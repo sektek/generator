@@ -51,10 +51,6 @@ const run = (options: Record<string, unknown> = { language: 'javascript' }) =>
         { namespace: '@sektek/js:base-package' },
       ],
       [
-        join(__dirname, '../devcontainer/index.js'),
-        { namespace: '@sektek/js:devcontainer' },
-      ],
-      [
         join(__dirname, '../gitconfig/index.js'),
         { namespace: '@sektek/js:gitconfig' },
       ],
@@ -109,10 +105,12 @@ describe('@sektek/js:app', function () {
     expect(fs.exists('.mocharc.cjs')).to.be.true;
   });
 
-  it('composes devcontainer, overriding the Dockerfile with the JS/TS-specific image', async function () {
+  it('composes devcontainer, using the sektek/devcontainer-base image', async function () {
     const { fs } = await run();
     expect(fs.exists('.devcontainer/devcontainer.json')).to.be.true;
-    expect(fs.read('.devcontainer/Dockerfile')).to.include('typescript-node');
+    expect(fs.read('.devcontainer/Dockerfile')).to.include(
+      'sektek/devcontainer-base',
+    );
   });
 
   it('composes typescript when language is typescript', async function () {

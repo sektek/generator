@@ -33,11 +33,9 @@ export class WorkspaceGenerator extends BaseGenerator<
     });
   }
 
-  // readme's taskWriting fully (re)writes README.md; our own taskWriting
-  // below appends the "Changes Required" checklist to it, so readme must
-  // run before our own taskWriting method is even queued. editorconfig,
-  // gitconfig, and devcontainer are composed here too for consistency, even
-  // though their ordering relative to our own taskWriting doesn't matter.
+  // Composed here rather than in taskInitializing: beforeQueue runs before
+  // this generator's own task queue is built, so readme writes README.md
+  // before our own taskWriting appends the checklist to it.
   async beforeQueue() {
     await this.composeWith('editorconfig', this.options, true);
     await this.composeWith('gitconfig', this.options, true);

@@ -11,7 +11,6 @@ const DEFAULT_FEATURES: Partial<BaseFeatures> = {
 };
 
 const CONFIG_TEMPLATES = {
-  'nx.json.ejs': 'nx.json',
   'mocharc.cjs.ejs': '.mocharc.cjs',
   'npmrc.ejs': '.npmrc',
 };
@@ -23,7 +22,7 @@ const TS_TEMPLATES = {
 
 const WORKSPACE_DIRS = ['apps', 'libs', 'tools'];
 
-export const BUILD_SCRIPT = 'nx run-many --target build';
+export const BUILD_SCRIPT = 'npm run build --workspaces --if-present';
 
 export class WorkspaceGenerator extends BaseGenerator<
   BaseConfig,
@@ -38,9 +37,9 @@ export class WorkspaceGenerator extends BaseGenerator<
     super(args, options, { ...DEFAULT_FEATURES, ...features });
   }
 
-  // @sektek/base:workspace fully writes .vscode/settings.json; our own
-  // taskWriting below extendJSON-merges mocha keys into that same file, so
-  // base:workspace's whole chain must be queued before ours.
+  // Composed here rather than in taskInitializing: beforeQueue runs before
+  // this generator's own task queue is built, so @sektek/base:workspace
+  // writes .vscode/settings.json before our own taskWriting merges into it.
   async beforeQueue() {
     await this.composeWith('@sektek/base:workspace', this.options, true);
   }
@@ -51,12 +50,8 @@ export class WorkspaceGenerator extends BaseGenerator<
   }
 
   async taskDefault() {
-    // eslint/prettier supply their own devDependencies via
-    // writeDependencies() — don't duplicate; only add what's specific to
-    // the workspace root.
     await this.addDevDependency('c8');
     await this.addDevDependency('mocha');
-    await this.addDevDependency('nx');
 
     if (this.options.language === 'typescript') {
       await this.addDevDependency('typescript');
@@ -67,9 +62,9 @@ export class WorkspaceGenerator extends BaseGenerator<
   taskWriting() {
     const { language, author, license, private: isPrivate } = this.options;
 
-    // Full package.json write first — queued at our own instantiation,
-    // before the composeWith calls above execute, so it always lands before
-    // eslint/prettier's later extendJSON merges.
+    // Queued at instantiation, before taskInitializing's composeWith calls
+    // run, so this write lands before eslint/prettier's later extendJSON
+    // merges into the same package.json.
     this.fs.copyTpl(
       this.templatePath('package.json.ejs'),
       this.destinationPath('package.json'),
@@ -109,11 +104,8 @@ export class WorkspaceGenerator extends BaseGenerator<
       },
     });
 
-    // .vscode/settings.json (written by @sektek/base:workspace) has JSONC
-    // comments (a commented-out sample sqltools connection) — valid for VS
-    // Code, but extendJSON's strict JSON.parse chokes on them. Insert these
-    // keys textually instead, right after the opening brace, rather than
-    // merging as JSON.
+    // .vscode/settings.json has JSONC comments, which extendJSON's strict
+    // JSON.parse can't handle — insert these keys textually instead.
     const settingsPath = this.destinationPath('.vscode/settings.json');
     const settings = this.fs.read(settingsPath) ?? '';
     this.fs.write(
