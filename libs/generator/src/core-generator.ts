@@ -1,5 +1,6 @@
 import Generator from 'yeoman-generator/typed';
 
+import { CoreConfig } from './types/core-config.js';
 import { CoreFeatures } from './types/core-features.js';
 import { CoreOptions } from './types/core-options.js';
 
@@ -41,12 +42,13 @@ const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
 type GeneratorConstructorRef = { Generator: unknown; path: string };
 
 export abstract class CoreGenerator<
+  C extends CoreConfig,
   O extends CoreOptions,
   F extends CoreFeatures,
-> extends Generator<O, F> {
+> extends Generator<C, O, F> {
   package: string | null = null;
 
-  constructor(args: string | string[], options: O, features?: F) {
+  constructor(args: string[], options: O, features?: F) {
     super(
       args,
       {

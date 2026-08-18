@@ -1,3 +1,4 @@
+import { BaseConfig } from '../../lib/types/base-config.js';
 import { BaseFeatures } from '../../lib/types/base-features.js';
 import { BaseGenerator } from '../../lib/base-generator.js';
 import { BaseOptions } from '../../lib/types/base-options.js';
@@ -10,9 +11,13 @@ export const TEST_SCRIPT = 'mocha';
 export const TEST_COVER_SCRIPT = 'c8 npm run test';
 export const TEST_MIN_SCRIPT = 'mocha --config .mocharc.min.cjs';
 
-export class MochaGenerator extends BaseGenerator<BaseOptions, BaseFeatures> {
+export class MochaGenerator extends BaseGenerator<
+  BaseConfig,
+  BaseOptions,
+  BaseFeatures
+> {
   constructor(
-    args: string | string[],
+    args: string[],
     options: BaseOptions,
     features: BaseFeatures = {} as BaseFeatures,
   ) {

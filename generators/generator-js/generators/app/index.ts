@@ -4,6 +4,7 @@ import '../typescript/index.js';
 import '../eslint/index.js';
 import '../mocha/index.js';
 
+import { BaseConfig } from '../../lib/types/base-config.js';
 import { BaseFeatures } from '../../lib/types/base-features.js';
 import { BaseGenerator } from '../../lib/base-generator.js';
 import { BaseOptions } from '../../lib/types/base-options.js';
@@ -12,9 +13,13 @@ const DEFAULT_FEATURES: Partial<BaseFeatures> = {
   unique: true,
 };
 
-export class AppGenerator extends BaseGenerator<BaseOptions, BaseFeatures> {
+export class AppGenerator extends BaseGenerator<
+  BaseConfig,
+  BaseOptions,
+  BaseFeatures
+> {
   constructor(
-    args: string | string[],
+    args: string[],
     options: BaseOptions,
     features: BaseFeatures = {} as BaseFeatures,
   ) {
