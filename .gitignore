@@ -289,3 +289,5 @@ tmp/
 .nx/
 
 third-party/
+
+.worktrees/

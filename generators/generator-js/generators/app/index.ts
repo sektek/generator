@@ -32,6 +32,7 @@ export class AppGenerator extends BaseGenerator<
 
     await this.composeWith('@sektek/base:app', options, true);
     await this.composeWith('gitconfig', options, true);
+    await this.composeWith('@sektek/base:devcontainer', options, true);
     await this.composeWith('base-package', options, true);
 
     if (language === 'typescript') {

@@ -1,3 +1,5 @@
 import { BaseOptions } from 'yeoman-generator/typed';
 
-export type CoreOptions = BaseOptions & {};
+export type CoreOptions = BaseOptions & {
+  profile?: string;
+};
