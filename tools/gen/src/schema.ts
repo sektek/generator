@@ -67,8 +67,12 @@ export const JS_OPTIONS: OptionSpec[] = [
     default: 'UNLICENSED',
   },
   {
+    // Negatable form: with default: true and a plain --private flag,
+    // commander has no way to turn it off (there's no positive flag left
+    // to negate). --no-private is commander's own convention for a
+    // boolean that defaults true and needs to be overridable to false.
     key: 'private',
-    flag: '--private',
+    flag: '--no-private',
     prompt: 'Private package?',
     kind: 'boolean',
     default: true,

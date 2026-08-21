@@ -5,10 +5,10 @@ import { resolve } from './options.js';
 // Nothing in the real @sektek/base:*/@sektek/js:* schema is both required
 // and default-less today (language is the closest candidate, and it
 // resolves via a default instead of ever throwing), so the required-field
-// error path is exercised against a namespace that doesn't match either
-// real family, which schemaFor falls back to CORE_OPTIONS for — sufficient
-// here since resolve()'s validation only cares about the resolved schema,
-// not which namespace produced it.
+// tests below pass a synthetic extraSpecs entry to exercise that path.
+// The namespace used throughout (@sektek/base:app) is a real one — it's
+// incidental to these tests, since resolve()'s validation only cares
+// about the resolved schema, not which namespace produced it.
 
 describe('resolve', function () {
   it('fills in defaults when no flags are given', function () {
@@ -47,5 +47,17 @@ describe('resolve', function () {
         },
       ]),
     ).to.throw('Missing required option(s): apiKey, apiSecret');
+  });
+
+  it('throws when a select option is given a value outside its choices', function () {
+    expect(() => resolve('@sektek/js:app', { language: 'foo' })).to.throw(
+      'Invalid value for language: "foo" (expected one of: javascript, typescript)',
+    );
+  });
+
+  it('accepts a select option value that is one of its choices', function () {
+    const resolved = resolve('@sektek/js:app', { language: 'typescript' });
+
+    expect(resolved.language).to.equal('typescript');
   });
 });

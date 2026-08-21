@@ -19,8 +19,9 @@ export function addSchemaOptions(command: Command, namespace: string): Command {
 /**
  * Resolves a namespace's options by folding schema defaults under whatever
  * flags were actually given, then validates that every `required` key
- * still has a value. Throws one aggregated error listing every missing
- * required key, rather than failing on the first.
+ * still has a value and every `select` value is one of its declared
+ * `choices`. Throws one aggregated error listing every problem found,
+ * rather than failing on the first.
  *
  * @param namespace - The generator namespace being run (e.g. `@sektek/js:app`).
  * @param flagsGiven - Option values already supplied (CLI flags or wizard answers).
@@ -40,11 +41,30 @@ export function resolve(
   );
   const resolved = { ...defaults, ...flagsGiven };
 
+  const errors: string[] = [];
+
   const missing = schema
     .filter(spec => spec.required && resolved[spec.key] === undefined)
     .map(spec => spec.key);
   if (missing.length > 0) {
-    throw new Error(`Missing required option(s): ${missing.join(', ')}`);
+    errors.push(`Missing required option(s): ${missing.join(', ')}`);
+  }
+
+  for (const spec of schema) {
+    if (
+      spec.kind === 'select' &&
+      spec.choices &&
+      resolved[spec.key] !== undefined &&
+      !spec.choices.includes(resolved[spec.key] as string)
+    ) {
+      errors.push(
+        `Invalid value for ${spec.key}: ${JSON.stringify(resolved[spec.key])} (expected one of: ${spec.choices.join(', ')})`,
+      );
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(errors.join('; '));
   }
 
   return resolved;
