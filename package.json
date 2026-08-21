@@ -24,6 +24,7 @@
   },
   "workspaces": [
     "generators/*",
-    "libs/*"
+    "libs/*",
+    "tools/*"
   ]
 }
