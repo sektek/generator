@@ -1,8 +1,10 @@
 import { existsSync } from 'node:fs';
 
+import type Environment from 'yeoman-environment';
 import { expect } from 'chai';
+import sinon from 'sinon';
 
-import { REGISTRY } from './registry.js';
+import { REGISTRY, registerAll } from './registry.js';
 
 // One namespace per generator directory listed in each package's manifest,
 // exercised end-to-end against the real, built @sektek/generator-base and
@@ -38,5 +40,22 @@ describe('registry', function () {
     for (const { namespace, path } of REGISTRY) {
       expect(existsSync(path), `${namespace} -> ${path}`).to.be.true;
     }
+  });
+
+  describe('registerAll', function () {
+    it('registers every entry with the environment, by path and namespace', function () {
+      const register = sinon.stub();
+      const env = { register } as unknown as Environment;
+
+      registerAll(env);
+
+      expect(register.callCount).to.equal(REGISTRY.length);
+      for (const { namespace, path } of REGISTRY) {
+        expect(
+          register.calledWithExactly(path, { namespace }),
+          `expected registerAll to call register(${path}, { namespace: '${namespace}' })`,
+        ).to.be.true;
+      }
+    });
   });
 });
