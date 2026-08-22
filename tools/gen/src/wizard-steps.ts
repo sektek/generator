@@ -5,15 +5,9 @@ export type WizardChoice = {
   value: unknown;
 };
 
-// The step-sequencing logic pulled out of wizard.tsx: everything here is
-// plain data transformation with no ink/React involved, so — unlike the
-// actual ink TTY rendering, which is impractical to unit test — it can be
-// exercised directly.
-
 /**
  * The schema entries the wizard still needs to prompt for: any key
- * already supplied via `seed` (e.g. a CLI flag given alongside an
- * otherwise-interactive run) is pre-filled and skipped.
+ * already supplied via `seed` is skipped.
  *
  * @param schema - The full option schema for a namespace.
  * @param seed - Option values already supplied.
@@ -55,11 +49,9 @@ export function choicesFor(spec: OptionSpec): WizardChoice[] {
 }
 
 /**
- * The index within `choices` (as returned by `choicesFor(spec)`) matching
- * `spec`'s declared default value, for pre-selecting `<SelectInput>`'s
- * initial highlight so it actually reflects the schema's default instead
- * of always starting at the first item. Falls back to `0` when there's no
- * default, or the default doesn't match any choice.
+ * The index within `choices` matching `spec`'s declared default, for
+ * pre-selecting `<SelectInput>`'s initial highlight. Falls back to `0`
+ * when there's no default, or it doesn't match any choice.
  *
  * @param spec - The `select` or `boolean` option spec being rendered.
  * @param choices - That spec's choice list, as returned by `choicesFor(spec)`.
