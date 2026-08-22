@@ -27,7 +27,12 @@ export default defineConfig([
     // enables JSX for files matching its default .tsx glob). The one gap
     // is check-file's naming rule, whose regex only covers .js/.ts — this
     // is the first package with .tsx files (the wizard component), so
-    // extend it to require PascalCase for .tsx, matching React convention.
+    // extend it to cover .tsx too. Kebab-case, not React's usual
+    // PascalCase: every other file in this repo (including generator
+    // classes) is kebab-case, and wizard.tsx — the actual file landing
+    // here — follows that, not React convention. (An earlier version of
+    // this override required PascalCase, chosen before any real .tsx
+    // file existed to check it against.)
     // No eslint-plugin-react/-react-hooks yet: there's no JSX-authored
     // source in this package until the wizard lands, so add those when
     // there's real code to lint against them.
@@ -35,7 +40,7 @@ export default defineConfig([
     rules: {
       'check-file/filename-naming-convention': [
         'error',
-        { '**/*.tsx': 'PASCAL_CASE' },
+        { '**/*.tsx': 'KEBAB_CASE' },
       ],
     },
   },
