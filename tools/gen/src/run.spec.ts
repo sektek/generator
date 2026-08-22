@@ -6,10 +6,6 @@ import { expect } from 'chai';
 
 import { runGenerator } from './run.js';
 
-// This is the first point in the stack where a real generator runs
-// end-to-end through tools/gen: a real Environment, a real generator
-// (registered via registry.ts's entries), writing to a real temp
-// directory on disk — no mocked fs, no ink/TTY involved.
 describe('runGenerator', function () {
   let destinationRoot: string;
 

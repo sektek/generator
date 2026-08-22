@@ -8,18 +8,13 @@ export type RunEnv = {
 };
 
 /**
- * The one place either run mode (automated or interactive) actually
- * invokes Yeoman: registers every known generator, then runs exactly one
- * of them with a fully-resolved options object. Generator classes
- * themselves need zero changes to work through this path.
+ * Registers every known generator, then runs exactly one with a
+ * fully-resolved options object.
  *
- * `env.force` ends up in the conflicter's options the same way `yo`'s own
- * `--force`/`-f` flag does — but not via an `Environment` constructor
- * option (`yeoman-environment`@4's `Environment` has no such field;
- * verified against its installed types/source). `runGenerator()`
- * (`environment-base.js`) starts the conflicter from `generator.options`,
- * so `force` has to travel as a generator option, same as everything else
- * in `options`.
+ * `env.force` travels as a generator option, not an `Environment`
+ * constructor option: `yeoman-environment`@4's `Environment` has no
+ * `force`/`conflicterOptions` field — `runGenerator()`
+ * (`environment-base.js`) starts the conflicter from `generator.options`.
  *
  * @param generatorNamespace - The generator namespace to run (e.g. `@sektek/js:app`).
  * @param options - The fully-resolved options object to pass to the generator.

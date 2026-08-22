@@ -29,9 +29,8 @@ function entriesFor(
   }));
 }
 
-// Every namespace either package's manifest lists — not just the
-// user-invocable top-level generators, since composeWith chains reach
-// every sub-generator regardless of which one is directly invoked.
+// Every namespace, not just top-level generators: composeWith chains
+// reach every sub-generator regardless of which one is directly invoked.
 export const REGISTRY: RegistryEntry[] = [
   ...entriesFor('@sektek/generator-base', '@sektek/base', BASE_GENERATORS),
   ...entriesFor('@sektek/generator-js', '@sektek/js', JS_GENERATORS),

@@ -12,19 +12,13 @@ export type WizardProps = {
   onComplete: (answers: Record<string, unknown>) => void;
 };
 
-// Not unit-tested: actual ink TTY rendering is impractical to exercise
-// outside a real terminal (consistent with how CLAUDE.md already accepts
-// "no real yo CLI discovery wiring" as a documented gap elsewhere in this
-// repo). Verified manually via `npm run dev -- js:app` in a real terminal.
-// The pure step-sequencing logic (pendingSpecs, choicesFor) lives in
-// wizard-steps.ts instead, and is unit-tested there.
+// Not unit-tested: ink TTY rendering is impractical to exercise outside a
+// real terminal. The pure step-sequencing logic is unit-tested in
+// wizard-steps.ts instead.
 
 /**
- * Steps through a namespace's option schema one prompt at a time —
- * `kind: 'text'` via `<TextInput>`, `kind: 'select'`/`'boolean'` via
- * `<SelectInput>` — skipping any key already supplied through `seed`, and
- * hands the fully-resolved answers to `onComplete` once every remaining
- * step has been answered.
+ * Steps through a namespace's option schema one prompt at a time,
+ * skipping any key already supplied through `seed`.
  *
  * @param props - Schema to walk, pre-filled answers, and the completion callback.
  * @param props.schema - The full option schema for the namespace being run.
@@ -40,9 +34,8 @@ export function Wizard({ schema, seed, onComplete }: WizardProps) {
 
   const done = stepIndex >= steps.length;
 
-  // answers/onComplete are included so the effect never closes over a
-  // stale value; the `if (done)` guard makes every intermediate
-  // re-invocation (one per step, while done is still false) a no-op.
+  // answers/onComplete are in the deps to avoid a stale closure; the
+  // `if (done)` guard makes every earlier re-invocation a no-op.
   useEffect(() => {
     if (done) {
       onComplete(answers);
@@ -70,9 +63,8 @@ export function Wizard({ schema, seed, onComplete }: WizardProps) {
 }
 
 /**
- * Renders the right input for a spec's kind: `<TextInput>` for `text`,
- * `<SelectInput>` (pre-selected at the schema's declared default) for
- * `select`/`boolean`.
+ * Renders `<TextInput>` for a `text` spec, `<SelectInput>` (pre-selected
+ * at the schema's default) for `select`/`boolean`.
  *
  * @param spec - The option spec currently being prompted for.
  * @param textValue - The text input's current (uncommitted) value.

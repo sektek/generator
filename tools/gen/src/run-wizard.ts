@@ -8,9 +8,8 @@ import { schemaFor } from './schema.js';
 // instead), so it doesn't need the tsx parser — only wizard.tsx does.
 
 /**
- * Bridges ink's component/callback model into the async/await flow the
- * CLI needs: mounts the wizard, resolves once the user has answered every
- * remaining schema step, then unmounts.
+ * Bridges ink's component/callback model into async/await: mounts the
+ * wizard, resolves once every remaining step is answered, then unmounts.
  *
  * @param namespace - The generator namespace being run (e.g. `@sektek/js:app`).
  * @param seed - Option values already supplied via CLI flags, pre-filled/skipped by the wizard.

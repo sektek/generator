@@ -22,20 +22,9 @@ export default defineConfig([
     },
   },
   {
-    // typescript-eslint's recommended config already parses JSX in .tsx
-    // files with no extra setup (verified: @typescript-eslint/parser
-    // enables JSX for files matching its default .tsx glob). The one gap
-    // is check-file's naming rule, whose regex only covers .js/.ts — this
-    // is the first package with .tsx files (the wizard component), so
-    // extend it to cover .tsx too. Kebab-case, not React's usual
-    // PascalCase: every other file in this repo (including generator
-    // classes) is kebab-case, and wizard.tsx — the actual file landing
-    // here — follows that, not React convention. (An earlier version of
-    // this override required PascalCase, chosen before any real .tsx
-    // file existed to check it against.)
-    // No eslint-plugin-react/-react-hooks yet: there's no JSX-authored
-    // source in this package until the wizard lands, so add those when
-    // there's real code to lint against them.
+    // check-file's naming rule only covers .js/.ts by default; extend it
+    // to .tsx too, kebab-case to match every other file in this repo
+    // (not React's usual PascalCase).
     files: ['**/*.tsx'],
     rules: {
       'check-file/filename-naming-convention': [

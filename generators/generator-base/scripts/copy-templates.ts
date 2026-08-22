@@ -4,11 +4,9 @@ import { join } from 'node:path';
 const GENERATORS_DIR = 'generators';
 const DIST_DIR = 'dist';
 
-// Walked and copied file-by-file rather than via fs.cpSync(src, dest,
-// { recursive: true }): that single-call directory copy has proven
-// unreliable on some overlay filesystems (observed leaving phantom,
-// unreadable directory entries in dist/), where the same tree copied
-// file-by-file works fine.
+// Copies file-by-file rather than fs.cpSync(src, dest, { recursive: true }):
+// that single-call form has proven unreliable on some overlay filesystems
+// (phantom, unreadable entries left in dist/).
 /**
  * Recursively copies src into dest, creating directories as needed.
  *

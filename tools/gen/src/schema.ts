@@ -67,10 +67,8 @@ export const JS_OPTIONS: OptionSpec[] = [
     default: 'UNLICENSED',
   },
   {
-    // Negatable form: with default: true and a plain --private flag,
-    // commander has no way to turn it off (there's no positive flag left
-    // to negate). --no-private is commander's own convention for a
-    // boolean that defaults true and needs to be overridable to false.
+    // --no-private, not --private: commander's convention for a boolean
+    // that defaults true and needs to stay overridable to false.
     key: 'private',
     flag: '--no-private',
     prompt: 'Private package?',
@@ -80,11 +78,10 @@ export const JS_OPTIONS: OptionSpec[] = [
 ];
 
 /**
- * Returns the option schema for a generator namespace: every composeWith
- * call passes its whole options object through unchanged, so the schema is
- * scoped per package family (`@sektek/base:*` vs `@sektek/js:*`), not per
- * individual sub-generator — a finer-grained schema would be spurious
- * precision the real generator code doesn't have.
+ * Returns the option schema for a generator namespace, scoped per package
+ * family (`@sektek/base:*` vs `@sektek/js:*`) rather than per individual
+ * sub-generator, since composeWith passes the whole options object through
+ * unchanged regardless of which one runs.
  *
  * @param namespace - The generator namespace being run (e.g. `@sektek/js:app`).
  * @returns The option specs relevant to that namespace's package family.
