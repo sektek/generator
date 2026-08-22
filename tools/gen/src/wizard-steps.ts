@@ -43,13 +43,35 @@ export function choicesFor(spec: OptionSpec): WizardChoice[] {
   }
 
   if (spec.kind === 'select') {
-    return (spec.choices ?? []).map(choice => ({
-      label: choice,
-      value: choice,
-    }));
+    if (!spec.choices || spec.choices.length === 0) {
+      throw new Error(`choicesFor(): select spec '${spec.key}' has no choices`);
+    }
+    return spec.choices.map(choice => ({ label: choice, value: choice }));
   }
 
   throw new Error(
     `choicesFor() only supports 'select'/'boolean' specs, got '${spec.kind}' for '${spec.key}'`,
   );
+}
+
+/**
+ * The index within `choices` (as returned by `choicesFor(spec)`) matching
+ * `spec`'s declared default value, for pre-selecting `<SelectInput>`'s
+ * initial highlight so it actually reflects the schema's default instead
+ * of always starting at the first item. Falls back to `0` when there's no
+ * default, or the default doesn't match any choice.
+ *
+ * @param spec - The `select` or `boolean` option spec being rendered.
+ * @param choices - That spec's choice list, as returned by `choicesFor(spec)`.
+ * @returns The index to pass as `<SelectInput>`'s `initialIndex`.
+ */
+export function defaultIndexFor(
+  spec: OptionSpec,
+  choices: WizardChoice[],
+): number {
+  if (spec.default === undefined) {
+    return 0;
+  }
+  const index = choices.findIndex(choice => choice.value === spec.default);
+  return index === -1 ? 0 : index;
 }

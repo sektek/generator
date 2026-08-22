@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import SelectInput from 'ink-select-input';
 import TextInput from 'ink-text-input';
 
-import { choicesFor, pendingSpecs } from './wizard-steps.js';
+import { choicesFor, defaultIndexFor, pendingSpecs } from './wizard-steps.js';
 import type { OptionSpec } from './schema.js';
 
 export type WizardProps = {
@@ -40,14 +40,14 @@ export function Wizard({ schema, seed, onComplete }: WizardProps) {
 
   const done = stepIndex >= steps.length;
 
-  // Only re-run when the wizard actually finishes; onComplete/answers are
-  // expected to be stable for the component's lifetime, so they're
-  // deliberately left out of the dependency list.
+  // answers/onComplete are included so the effect never closes over a
+  // stale value; the `if (done)` guard makes every intermediate
+  // re-invocation (one per step, while done is still false) a no-op.
   useEffect(() => {
     if (done) {
       onComplete(answers);
     }
-  }, [done]);
+  }, [done, answers, onComplete]);
 
   if (done) {
     return null;
@@ -56,26 +56,52 @@ export function Wizard({ schema, seed, onComplete }: WizardProps) {
   const spec = steps[stepIndex];
 
   const advance = (value: unknown) => {
-    setAnswers({ ...answers, [spec.key]: value });
+    setAnswers(prev => ({ ...prev, [spec.key]: value }));
     setTextValue('');
-    setStepIndex(stepIndex + 1);
+    setStepIndex(prev => prev + 1);
   };
 
   return (
     <Box flexDirection="column">
       <Text>{spec.prompt}</Text>
-      {spec.kind === 'text' ? (
-        <TextInput
-          value={textValue}
-          onChange={setTextValue}
-          onSubmit={value => advance(value === '' ? spec.default : value)}
-        />
-      ) : (
-        <SelectInput
-          items={choicesFor(spec)}
-          onSelect={item => advance(item.value)}
-        />
-      )}
+      {renderInput(spec, textValue, setTextValue, advance)}
     </Box>
+  );
+}
+
+/**
+ * Renders the right input for a spec's kind: `<TextInput>` for `text`,
+ * `<SelectInput>` (pre-selected at the schema's declared default) for
+ * `select`/`boolean`.
+ *
+ * @param spec - The option spec currently being prompted for.
+ * @param textValue - The text input's current (uncommitted) value.
+ * @param setTextValue - Updates the text input's current value.
+ * @param advance - Records the answered value and moves to the next step.
+ * @returns The input component for this step.
+ */
+function renderInput(
+  spec: OptionSpec,
+  textValue: string,
+  setTextValue: (value: string) => void,
+  advance: (value: unknown) => void,
+) {
+  if (spec.kind === 'text') {
+    return (
+      <TextInput
+        value={textValue}
+        onChange={setTextValue}
+        onSubmit={value => advance(value === '' ? spec.default : value)}
+      />
+    );
+  }
+
+  const choices = choicesFor(spec);
+  return (
+    <SelectInput
+      items={choices}
+      initialIndex={defaultIndexFor(spec, choices)}
+      onSelect={item => advance(item.value)}
+    />
   );
 }

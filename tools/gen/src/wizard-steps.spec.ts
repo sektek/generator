@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { choicesFor, pendingSpecs } from './wizard-steps.js';
+import { choicesFor, defaultIndexFor, pendingSpecs } from './wizard-steps.js';
 import type { OptionSpec } from './schema.js';
 
 const textSpec: OptionSpec = {
@@ -25,6 +25,32 @@ const booleanSpec: OptionSpec = {
   prompt: 'Private package?',
   kind: 'boolean',
   default: true,
+};
+
+// Default is deliberately not the first choice, to exercise
+// defaultIndexFor() actually finding it rather than always landing on 0.
+const selectSpecDefaultSecond: OptionSpec = {
+  key: 'runtime',
+  flag: '--runtime <value>',
+  prompt: 'Runtime',
+  kind: 'select',
+  choices: ['node', 'deno'],
+  default: 'deno',
+};
+
+const booleanSpecDefaultFalse: OptionSpec = {
+  key: 'verbose',
+  flag: '--verbose',
+  prompt: 'Verbose output?',
+  kind: 'boolean',
+  default: false,
+};
+
+const selectSpecNoChoices: OptionSpec = {
+  key: 'target',
+  flag: '--target <value>',
+  prompt: 'Target',
+  kind: 'select',
 };
 
 describe('wizard-steps', function () {
@@ -66,6 +92,37 @@ describe('wizard-steps', function () {
 
     it('throws for a text spec', function () {
       expect(() => choicesFor(textSpec)).to.throw(/only supports/);
+    });
+
+    it('throws for a select spec with no choices', function () {
+      expect(() => choicesFor(selectSpecNoChoices)).to.throw(/no choices/);
+    });
+  });
+
+  describe('defaultIndexFor', function () {
+    it('finds a select default that is not the first choice', function () {
+      const choices = choicesFor(selectSpecDefaultSecond);
+      expect(defaultIndexFor(selectSpecDefaultSecond, choices)).to.equal(1);
+    });
+
+    it('finds a boolean default of false (the second choice)', function () {
+      const choices = choicesFor(booleanSpecDefaultFalse);
+      expect(defaultIndexFor(booleanSpecDefaultFalse, choices)).to.equal(1);
+    });
+
+    it('finds a boolean default of true (the first choice)', function () {
+      const choices = choicesFor(booleanSpec);
+      expect(defaultIndexFor(booleanSpec, choices)).to.equal(0);
+    });
+
+    it('falls back to 0 when the spec has no default', function () {
+      expect(defaultIndexFor(textSpec, [])).to.equal(0);
+    });
+
+    it("falls back to 0 when the default doesn't match any choice", function () {
+      const choices = choicesFor(selectSpec);
+      const specWithUnknownDefault = { ...selectSpec, default: 'rust' };
+      expect(defaultIndexFor(specWithUnknownDefault, choices)).to.equal(0);
     });
   });
 });
