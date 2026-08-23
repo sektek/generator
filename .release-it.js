@@ -17,6 +17,12 @@ const HIDDEN_TYPES = new Set([
   'ci',
 ]);
 
+/**
+ * Recommends a release-it bump level from parsed conventional commits.
+ *
+ * @param commits - Parsed commits since the last release.
+ * @returns The recommended bump (level: 0 major, 1 minor, 2 patch), or null if nothing bump-worthy.
+ */
 function whatBump(commits) {
   let level = 2; // patch
   let breakings = 0;
