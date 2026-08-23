@@ -1,6 +1,6 @@
 {
   "name": "@sektek/generator",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Abstract base Yeoman generator with SEKTEK workspace-wide defaults and PascalCase priority-queue aliasing, used by every @sektek generator package",
   "author": "Edward Kelly <eddie@sektek.net>",
   "repository": {
