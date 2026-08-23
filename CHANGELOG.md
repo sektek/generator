@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.1](https://github.com/sektek/generator/compare/v0.1.0...v0.1.1) (2026-08-23)
+
+### Bug Fixes
+
+* add JSDoc comment to whatBump, drop disallowed JSDoc type annotations ([d6df4d0](https://github.com/sektek/generator/commit/d6df4d04ebff14a7365292c91c6492054760e008))
+
 ## 0.1.0 (2026-08-23)
 
 ### Features
