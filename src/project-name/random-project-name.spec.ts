@@ -21,4 +21,23 @@ describe('randomProjectName', function () {
       expect(randomProjectName()).to.match(/^[a-z]+-[a-z]+$/);
     }
   });
+
+  it('throws instead of indexing out of bounds when random() returns 1', function () {
+    expect(() => randomProjectName(() => 1)).to.throw(RangeError, /\[0, 1\)/);
+  });
+
+  it('throws instead of producing "undefined" when random() returns NaN', function () {
+    expect(() => randomProjectName(() => NaN)).to.throw(RangeError, /\[0, 1\)/);
+  });
+
+  it('throws when random() returns a negative number', function () {
+    expect(() => randomProjectName(() => -0.1)).to.throw(
+      RangeError,
+      /\[0, 1\)/,
+    );
+  });
+
+  it('throws when random() returns a number greater than 1', function () {
+    expect(() => randomProjectName(() => 1.5)).to.throw(RangeError, /\[0, 1\)/);
+  });
 });
