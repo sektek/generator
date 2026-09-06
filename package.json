@@ -18,6 +18,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./project-name": {
+      "types": "./dist/src/project-name/index.d.ts",
+      "default": "./dist/src/project-name/index.js"
     }
   },
   "scripts": {
