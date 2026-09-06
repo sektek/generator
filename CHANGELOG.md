@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0](https://github.com/sektek/generator/compare/v0.1.1...v0.2.0) (2026-09-06)
+
+### Features
+
+* add adjective-noun random project name generator ([#2](https://github.com/sektek/generator/issues/2)) ([1122ff5](https://github.com/sektek/generator/commit/1122ff5c5ef6eb9b049549f9e244a9721463c4e5))
+
 ## [0.1.1](https://github.com/sektek/generator/compare/v0.1.0...v0.1.1) (2026-08-23)
 
 ### Bug Fixes
