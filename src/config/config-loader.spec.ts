@@ -1,5 +1,5 @@
+import { basename, join } from 'node:path';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
 import { expect } from 'chai';
@@ -157,13 +157,40 @@ describe('loadConfig', function () {
     expect(await loadConfig(dir)).to.deep.equal({ profile: 'cjs-under-esm' });
   });
 
+  it('does not mask a genuine ReferenceError in an ESM config as a CJS/ESM format mismatch', async function () {
+    // `someUndefinedVariable` throws a plain `ReferenceError: someUndefinedVariable
+    // is not defined` — a real bug in the config, not Node's own "is not defined
+    // in ES module scope" diagnostic for a `module`/`exports`/`require` reference.
+    // A blanket `error instanceof ReferenceError` check would misclassify this as
+    // a CJS-under-ESM mismatch, retry by forcing the source through a `.cjs`
+    // extension, and surface a confusing `SyntaxError: Unexpected token 'export'`
+    // from that doomed retry instead of the real problem.
+    writeFileSync(
+      join(dir, 'gen.config.js'),
+      'export default { a: someUndefinedVariable };\n',
+    );
+
+    const file = join(dir, 'gen.config.js');
+    await loadConfig(dir).then(
+      () => {
+        throw new Error('expected loadConfig to reject');
+      },
+      error => {
+        expect((error as Error).message).to.include(file);
+        const cause = (error as Error).cause as Error;
+        expect(cause).to.be.instanceOf(ReferenceError);
+        expect(cause.message).to.include('someUndefinedVariable');
+      },
+    );
+  });
+
   it("memoizes by real path, not the caller's literal spelling", async function () {
     const file = join(dir, 'gen.config.json');
     writeFileSync(file, JSON.stringify({ value: 'first' }));
 
     const viaRealPath = await loadConfig(dir);
     const viaDifferentSpelling = await loadConfig(
-      join(dir, '..', dir.split('/').pop()!),
+      join(dir, '..', basename(dir)),
     );
 
     // Mutating on disk after both reads confirms a third call (through

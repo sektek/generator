@@ -216,4 +216,18 @@ describe('resolveConfigDefaults', function () {
       },
     );
   });
+
+  it('rejects a namespace with extra ":" segments instead of silently ignoring the remainder', async function () {
+    await resolveConfigDefaults('@sektek/js:app:extra', {
+      cwd: root,
+      homeDir: home,
+    }).then(
+      () => {
+        throw new Error('expected resolveConfigDefaults to reject');
+      },
+      error => {
+        expect((error as Error).message).to.include('@sektek/js:app:extra');
+      },
+    );
+  });
 });

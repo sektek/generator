@@ -62,14 +62,14 @@ function parseNamespace(namespace: string): {
   family: string;
   generator: string;
 } {
-  const [pkg, generator] = namespace.split(':');
-  const family = pkg?.split('/')[1];
-  if (!family || !generator) {
+  const parts = namespace.split(':');
+  const family = parts[0]?.split('/')[1];
+  if (parts.length !== 2 || !family || !parts[1]) {
     throw new Error(
       `resolveConfigDefaults(): expected a resolved namespace like "@sektek/js:app", got ${JSON.stringify(namespace)}`,
     );
   }
-  return { family, generator };
+  return { family, generator: parts[1] };
 }
 
 /**
