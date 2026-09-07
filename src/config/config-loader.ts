@@ -14,16 +14,11 @@ import { parse as parseYaml } from 'yaml';
 
 export type ConfigObject = Record<string, unknown>;
 
-// Precedence when more than one gen.config.* file exists in the same
-// directory: only the first format found is loaded.
 const CONFIG_FORMATS = ['js', 'yaml', 'json'] as const;
 type ConfigFormat = (typeof CONFIG_FORMATS)[number];
 
 type ConfigFile = { path: string; format: ConfigFormat };
 
-// One SingletonProvider per directory, so a directory's config file is
-// only ever read/parsed once per process run no matter how many times
-// loadConfig() is called for it.
 const providers = new Map<
   string,
   SingletonProvider<ConfigObject | undefined>
@@ -38,12 +33,6 @@ const providers = new Map<
  * @returns The parsed config object, or undefined if `dir` has no config file.
  */
 export function loadConfig(dir: string): Promise<ConfigObject | undefined> {
-  // Normalize before using as both the memoization key and the path
-  // readConfig()/findConfigFile() actually search — otherwise
-  // loadConfig('some/dir') and loadConfig('/abs/.../some/dir') (the same
-  // real directory, spelled differently) would create separate providers,
-  // reread the file twice, and produce a relative path in error messages
-  // despite the documented absolute-path guarantee.
   const key = realpathSync(dir);
   let provider = providers.get(key);
   if (!provider) {
@@ -114,14 +103,8 @@ async function parse({ path, format }: ConfigFile): Promise<unknown> {
   }
 }
 
-// Node's own diagnostic text for each mismatch (stable across Node's
-// supported versions, verified empirically against Node 24 — see the
-// PR discussion this narrowing was added to address). Matching on this
-// instead of the bare error class stops an unrelated bug in the user's own
-// config (e.g. a real `ReferenceError: someUndefinedVariable is not
-// defined`) from being misclassified as a module-format mismatch, retried
-// against the wrong forced extension, and surfacing a confusing SyntaxError
-// that masks the actual problem.
+// Matched instead of the bare error class, so a real bug in the user's
+// config doesn't get misclassified as a module-format mismatch.
 const ESM_UNDER_CJS_PATTERNS = [
   /^Cannot use import statement outside a module$/,
   /^Unexpected token 'export'$/,
