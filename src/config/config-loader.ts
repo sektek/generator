@@ -42,10 +42,6 @@ export function loadConfig(dir: string): Promise<ConfigObject | undefined> {
   return provider.get();
 }
 
-/**
- * @param dir - Directory to search.
- * @returns The matching file, or undefined.
- */
 function findConfigFile(dir: string): ConfigFile | undefined {
   for (const format of CONFIG_FORMATS) {
     const path = join(dir, `gen.config.${format}`);
@@ -56,10 +52,6 @@ function findConfigFile(dir: string): ConfigFile | undefined {
   return undefined;
 }
 
-/**
- * @param dir - Directory to load a config file from.
- * @returns The parsed config, or undefined.
- */
 async function readConfig(dir: string): Promise<ConfigObject | undefined> {
   const file = findConfigFile(dir);
   if (!file) {
@@ -79,12 +71,6 @@ async function readConfig(dir: string): Promise<ConfigObject | undefined> {
   }
 }
 
-/**
- * @param file - The config file to parse.
- * @param file.path - Absolute path.
- * @param file.format - File format.
- * @returns The parsed value.
- */
 async function parse({ path, format }: ConfigFile): Promise<unknown> {
   switch (format) {
     case 'json':
@@ -103,10 +89,6 @@ const ESM_UNDER_CJS_PATTERNS = [
   /^Unexpected token 'export'$/,
 ];
 
-/**
- * @param error - Error thrown by importing the config file.
- * @returns Whether it's specifically an ESM-under-CJS mismatch.
- */
 function isEsmUnderCjsMismatch(error: unknown): error is SyntaxError {
   return (
     error instanceof SyntaxError &&
@@ -114,10 +96,6 @@ function isEsmUnderCjsMismatch(error: unknown): error is SyntaxError {
   );
 }
 
-/**
- * @param error - Error thrown by importing the config file.
- * @returns Whether it's specifically a CJS-under-ESM mismatch.
- */
 function isCjsUnderEsmMismatch(error: unknown): error is ReferenceError {
   return (
     error instanceof ReferenceError &&
@@ -125,10 +103,6 @@ function isCjsUnderEsmMismatch(error: unknown): error is ReferenceError {
   );
 }
 
-/**
- * @param path - Absolute path to the `.js` config file.
- * @returns The default export, or the module namespace if there isn't one.
- */
 async function loadJsModuleExport(path: string): Promise<unknown> {
   let mod: Record<string, unknown>;
   try {
@@ -146,11 +120,6 @@ async function loadJsModuleExport(path: string): Promise<unknown> {
   return 'default' in mod ? mod.default : mod;
 }
 
-/**
- * @param path - Source file to copy.
- * @param ext - Forced extension (`mjs` for ESM, `cjs` for CommonJS).
- * @returns The imported module namespace.
- */
 async function importViaTempCopy(
   path: string,
   ext: 'mjs' | 'cjs',

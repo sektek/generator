@@ -51,10 +51,6 @@ export async function resolveConfigDefaults(
   return result;
 }
 
-/**
- * @param namespace - e.g. `@sektek/js:app`.
- * @returns The package family and generator name.
- */
 function parseNamespace(namespace: string): {
   family: string;
   generator: string;
@@ -69,12 +65,6 @@ function parseNamespace(namespace: string): {
   return { family, generator: parts[1] };
 }
 
-/**
- * @param config - One directory's parsed config file.
- * @param family - Current run's package family.
- * @param generator - Current run's generator name.
- * @returns This directory's effective defaults.
- */
 function effectiveDefaults(
   config: ConfigObject,
   family: string,
@@ -96,10 +86,6 @@ function effectiveDefaults(
   return { ...topLevel, ...namespaced };
 }
 
-/**
- * @param value - Value to narrow.
- * @returns `value` if it's a plain object, else undefined.
- */
 function asConfigObject(value: unknown): ConfigObject | undefined {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
     ? (value as ConfigObject)
