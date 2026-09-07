@@ -52,11 +52,8 @@ export async function resolveConfigDefaults(
 }
 
 /**
- * Splits a resolved namespace into the package family and generator name
- * its config nesting (`<family>.<generator>.key`) is keyed on.
- *
  * @param namespace - e.g. `@sektek/js:app`.
- * @returns The package family (`js`/`base`) and generator name.
+ * @returns The package family and generator name.
  */
 function parseNamespace(namespace: string): {
   family: string;
@@ -73,17 +70,10 @@ function parseNamespace(namespace: string): {
 }
 
 /**
- * Merges one directory's config into the effective defaults for a single
- * namespace: every top-level key whose value isn't itself a plain object
- * (every real option value is a scalar — a nested object can only be
- * namespace-section structure, `family`'s own or another's, never a
- * default value), overridden by whatever's namespaced under
- * `family.generator`, if anything.
- *
  * @param config - One directory's parsed config file.
- * @param family - The current run's package family (`js`/`base`).
- * @param generator - The current run's generator name.
- * @returns This directory's effective defaults for that namespace.
+ * @param family - Current run's package family.
+ * @param generator - Current run's generator name.
+ * @returns This directory's effective defaults.
  */
 function effectiveDefaults(
   config: ConfigObject,
@@ -107,9 +97,7 @@ function effectiveDefaults(
 }
 
 /**
- * Narrows a config value to a plain object, if it is one.
- *
- * @param value - The value to narrow.
+ * @param value - Value to narrow.
  * @returns `value` if it's a plain object, else undefined.
  */
 function asConfigObject(value: unknown): ConfigObject | undefined {
