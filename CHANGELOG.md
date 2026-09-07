@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0](https://github.com/sektek/generator/compare/v0.2.0...v0.3.0) (2026-09-07)
+
+### Features
+
+* extract shared gen.config.* resolution logic ([#3](https://github.com/sektek/generator/issues/3)) ([2e23223](https://github.com/sektek/generator/commit/2e2322345c6e6d856b252e09d6c1b34ffa4b3104))
+
 ## [0.2.0](https://github.com/sektek/generator/compare/v0.1.1...v0.2.0) (2026-09-06)
 
 ### Features
