@@ -25,8 +25,16 @@ export type Prompt = {
 };
 
 /**
- * What a generator author actually supplies to `PromptBuilder.create()` —
- * every field but `name`/`type`/`message` is optional, filled in with a
- * default (or, when building `.from(prompt)`, the seed prompt's own value).
+ * What a generator author supplies to build a fresh `Prompt` from scratch —
+ * `name`/`type`/`message` are the only fields with no sensible default, so
+ * they're required here; everything else is optional and gets a
+ * builder-supplied default. Not, itself, `PromptBuilder.create()`'s
+ * parameter type: `create()` stays `Partial<Prompt>` so `.from(prompt)`
+ * can omit `name`/`type`/`message` too, inheriting them from the seed —
+ * this type only documents/constrains the no-seed case.
  */
-export type PromptInit = Partial<Prompt>;
+export type PromptInit = {
+  name: string;
+  type: string;
+  message: string;
+} & Partial<Prompt>;
