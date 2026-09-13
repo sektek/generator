@@ -8,7 +8,6 @@ import { CoreOptions } from './types/core-options.js';
 
 const DEFAULT_OPTIONS: Partial<CoreOptions> = {
   skipInstall: false,
-  namespace: 'sektek',
   profile: 'default',
 };
 const DEFAULT_FEATURES: Partial<CoreFeatures> = {
