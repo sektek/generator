@@ -1,6 +1,6 @@
 import { allOf } from '@sektek/utility-belt';
 
-import { Prompt, PromptInit } from './types/prompt.js';
+import { Prompt } from './types/prompt.js';
 
 /**
  * Builds `Prompt`s, filling in a default for every field beyond
@@ -36,10 +36,16 @@ export class PromptBuilder {
    * seed and `init` supply one, the result requires both (an
    * `AllPredicate`) rather than `init`'s replacing the seed's.
    *
+   * `name`/`type`/`message` are only actually required when there's no
+   * seed — enforced at runtime, not in `init`'s type, since a stricter
+   * type here would also reject `.from(prompt).create({})` omitting them
+   * to inherit from the seed. See `PromptInit` for the no-seed-required
+   * shape.
+   *
    * @param init - The fields to set; anything omitted falls back to the seed or a built-in default.
    * @returns The resolved prompt.
    */
-  create(init: PromptInit = {}): Prompt {
+  create(init: Partial<Prompt> = {}): Prompt {
     const seed = this.#seed;
     const name = init.name ?? seed?.name;
     const type = init.type ?? seed?.type;
@@ -61,7 +67,7 @@ export class PromptBuilder {
     };
   }
 
-  #resolveIncludePrompt(init: PromptInit, seed?: Prompt) {
+  #resolveIncludePrompt(init: Partial<Prompt>, seed?: Prompt) {
     if (init.includePrompt && seed?.includePrompt) {
       return allOf(seed.includePrompt, init.includePrompt);
     }
