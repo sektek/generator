@@ -2,9 +2,11 @@ import { basename } from 'node:path';
 
 import Generator from 'yeoman-generator/typed';
 
+import { Constructor } from './types/constructor.js';
 import { CoreConfig } from './types/core-config.js';
 import { CoreFeatures } from './types/core-features.js';
 import { CoreOptions } from './types/core-options.js';
+import { Prompt } from './types/prompt.js';
 
 const DEFAULT_OPTIONS: Partial<CoreOptions> = {
   skipInstall: false,
@@ -43,12 +45,52 @@ const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
 // shape, which isn't part of this package's public dependency surface.
 type GeneratorConstructorRef = { Generator: unknown; path: string };
 
+/**
+ * One entry in a generator's `composites()` — the sub-generator name
+ * (as passed to `composeWith`) paired with its class, so the same list
+ * drives both `taskInitializing`'s actual composition and `prompts()`'s
+ * static discovery of that sub-generator's own prompts, without a live
+ * instance of either side.
+ */
+export type Composite = {
+  name: string;
+  generatorClass: Constructor<
+    CoreGenerator<CoreConfig, CoreOptions, CoreFeatures>
+  >;
+};
+
 export abstract class CoreGenerator<
   C extends CoreConfig,
   O extends CoreOptions,
   F extends CoreFeatures,
 > extends Generator<C, O, F> {
   package: string | null = null;
+
+  /**
+   * This generator's own prompts, recursively including whatever it
+   * composes with (see `composites()`). Static and side-effect-free so gen
+   * can discover them without instantiating anything or needing a live
+   * `Environment`. Defaults to none; override in a subclass that actually
+   * has prompts to ask.
+   *
+   * @returns This generator's prompts.
+   */
+  static prompts(): Prompt[] {
+    return [];
+  }
+
+  /**
+   * The sub-generators this generator composes with, by name and class.
+   * The single source of truth `taskInitializing` and `prompts()` should
+   * both read from, so there's exactly one place naming what a generator
+   * composes with. Defaults to none; override in a subclass that actually
+   * composes with others.
+   *
+   * @returns This generator's composed sub-generators.
+   */
+  static composites(): Composite[] {
+    return [];
+  }
 
   constructor(args: string[], options: O, features?: F) {
     super(
