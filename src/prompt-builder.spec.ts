@@ -1,4 +1,9 @@
-import { PredicateFn, ProviderFn, getComponent } from '@sektek/utility-belt';
+import {
+  PredicateFn,
+  ProviderFn,
+  anyOf,
+  getComponent,
+} from '@sektek/utility-belt';
 import { expect, use } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
@@ -159,7 +164,7 @@ describe('PromptBuilder', function () {
       expect(prompt.capabilities).to.equal(capabilities);
     });
 
-    it('composes includePrompt with the seed’s via AND, rather than replacing it', async function () {
+    it('composes includePrompt with the seed’s via AND by default, rather than replacing it', async function () {
       const seedWithIncludePrompt = new PromptBuilder().from(seed).create({
         includePrompt: (ctx: PromptContext) => ctx.answers.seedAnswer === true,
       });
@@ -191,6 +196,50 @@ describe('PromptBuilder', function () {
       expect(bothTrue).to.equal(true);
       expect(onlySeedTrue).to.equal(false);
       expect(onlyOverrideTrue).to.equal(false);
+    });
+
+    it('composes includePrompt with the seed’s via OR when combineIncludePrompt is anyOf', async function () {
+      const seedWithIncludePrompt = new PromptBuilder().from(seed).create({
+        includePrompt: (ctx: PromptContext) => ctx.answers.seedAnswer === true,
+      });
+
+      const prompt = new PromptBuilder().from(seedWithIncludePrompt).create(
+        {
+          includePrompt: (ctx: PromptContext) =>
+            ctx.answers.overrideAnswer === true,
+        },
+        anyOf,
+      );
+
+      const bothTrue = await Promise.resolve(
+        includePrompt(prompt, {
+          answers: { seedAnswer: true, overrideAnswer: true },
+          flagsGiven: {},
+        }),
+      );
+      const onlySeedTrue = await Promise.resolve(
+        includePrompt(prompt, {
+          answers: { seedAnswer: true, overrideAnswer: false },
+          flagsGiven: {},
+        }),
+      );
+      const onlyOverrideTrue = await Promise.resolve(
+        includePrompt(prompt, {
+          answers: { seedAnswer: false, overrideAnswer: true },
+          flagsGiven: {},
+        }),
+      );
+      const neitherTrue = await Promise.resolve(
+        includePrompt(prompt, {
+          answers: { seedAnswer: false, overrideAnswer: false },
+          flagsGiven: {},
+        }),
+      );
+
+      expect(bothTrue).to.equal(true);
+      expect(onlySeedTrue).to.equal(true);
+      expect(onlyOverrideTrue).to.equal(true);
+      expect(neitherTrue).to.equal(false);
     });
   });
 });
