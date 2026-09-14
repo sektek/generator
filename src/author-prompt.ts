@@ -9,6 +9,6 @@ import { deriveAuthorFromGitConfig } from './git-identity.js';
 export const authorPrompt = new PromptBuilder().create({
   name: 'author',
   type: 'text',
-  message: 'Author',
+  label: 'Author',
   provider: deriveAuthorFromGitConfig,
 });

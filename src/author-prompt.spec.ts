@@ -15,7 +15,7 @@ describe('authorPrompt', function () {
   it('is a text prompt named "author"', function () {
     expect(authorPrompt.name).to.equal('author');
     expect(authorPrompt.type).to.equal('text');
-    expect(authorPrompt.message).to.be.a('string').that.is.not.empty;
+    expect(authorPrompt.label).to.be.a('string').that.is.not.empty;
   });
 
   it('provider derives the default from git config', async function () {

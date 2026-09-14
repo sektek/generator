@@ -16,7 +16,7 @@ const generateProjectName = (): string => randomProjectName();
 export const projectNamePrompt = new PromptBuilder().create({
   name: 'projectName',
   type: 'text',
-  message: 'Project name',
+  label: 'Project name',
   provider: generateProjectName,
   capabilities: [{ type: 'reloadable', provider: generateProjectName }],
 });

@@ -6,7 +6,7 @@ describe('projectNamePrompt', function () {
   it('is a text prompt named "projectName"', function () {
     expect(projectNamePrompt.name).to.equal('projectName');
     expect(projectNamePrompt.type).to.equal('text');
-    expect(projectNamePrompt.message).to.be.a('string').that.is.not.empty;
+    expect(projectNamePrompt.label).to.be.a('string').that.is.not.empty;
   });
 
   it('provider generates an adjective-noun name', async function () {
