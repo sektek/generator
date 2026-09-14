@@ -8,12 +8,8 @@ import {
 import { Prompt } from './types/prompt.js';
 
 /**
- * A function shaped like utility-belt's `allOf`/`anyOf`: combines several
- * predicates into one. `PromptBuilder`'s default (`allOf`) is right for a
- * generator layering its own extra condition onto a prompt it composes
- * with (narrowing — both must pass); `anyOf` is right when unifying two
- * already-built prompts that share a `name` (broadening — either consumer
- * wanting it is enough to ask).
+ * A function shaped like utility-belt's `allOf`/`anyOf`. `allOf` (the
+ * default) narrows; `anyOf` broadens — see `PromptBuilderOptions.includeMode`.
  */
 export type IncludePromptCombinator = <T>(
   ...predicates: PredicateComponent<T>[]
@@ -62,12 +58,7 @@ export type PromptBuilderOptions = {
 
 /**
  * Builds `Prompt`s, filling in a default for every field beyond
- * `name`/`type`/`label`. Not backed by utility-belt's `ObjectBuilder` the
- * way synaptik's `EventBuilder` is: `ObjectBuilder`'s default-filling
- * treats a Function override as something to invoke immediately, but
- * `provider`/`includePrompt` need to be stored as real functions and
- * invoked later, by the wizard — reusing that merge behavior would
- * silently break every prompt that sets one of these fields.
+ * `name`/`type`/`label`.
  */
 export class PromptBuilder {
   #includeMode: IncludePromptCombinator;
@@ -104,11 +95,8 @@ export class PromptBuilder {
    * plain-replace, respectively) rather than `init`'s replacing the seed's
    * outright.
    *
-   * `name`/`type`/`label` are only actually required when there's no
-   * seed — enforced at runtime, not in `init`'s type, since a stricter
-   * type here would also reject `.from(prompt).create({})` omitting them
-   * to inherit from the seed. See `PromptInit` for the no-seed-required
-   * shape.
+   * `name`/`type`/`label` are only actually required when there's no seed
+   * (see `PromptInit`); `.from(prompt).create({})` can omit them.
    *
    * @param init - The fields to set; anything omitted falls back to the seed or a built-in default.
    * @returns The resolved prompt.
