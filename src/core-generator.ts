@@ -2,9 +2,11 @@ import { basename } from 'node:path';
 
 import Generator from 'yeoman-generator/typed';
 
+import { Constructor } from './types/constructor.js';
 import { CoreConfig } from './types/core-config.js';
 import { CoreFeatures } from './types/core-features.js';
 import { CoreOptions } from './types/core-options.js';
+import { Prompt } from './types/prompt.js';
 
 const DEFAULT_OPTIONS: Partial<CoreOptions> = {
   skipInstall: false,
@@ -43,12 +45,38 @@ const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
 // shape, which isn't part of this package's public dependency surface.
 type GeneratorConstructorRef = { Generator: unknown; path: string };
 
+/** One entry in a generator's `composites()`: a sub-generator's name paired with its class. */
+export type Composite = {
+  name: string;
+  generatorClass: Constructor<
+    CoreGenerator<CoreConfig, CoreOptions, CoreFeatures>
+  >;
+};
+
 export abstract class CoreGenerator<
   C extends CoreConfig,
   O extends CoreOptions,
   F extends CoreFeatures,
 > extends Generator<C, O, F> {
   package: string | null = null;
+
+  /**
+   * This generator's own prompts, including whatever it composes with.
+   *
+   * @returns This generator's prompts.
+   */
+  static prompts(): Prompt[] {
+    return [];
+  }
+
+  /**
+   * The sub-generators this generator composes with, by name and class.
+   *
+   * @returns This generator's composed sub-generators.
+   */
+  static composites(): Composite[] {
+    return [];
+  }
 
   constructor(args: string[], options: O, features?: F) {
     super(
