@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/sektek/generator/compare/v0.3.0...v0.4.0) (2026-09-14)
+
+### Features
+
+* **generator:** Constructor<T>, Prompt/PromptCapability/PromptContext types ([#5](https://github.com/sektek/generator/issues/5)) ([bccf71a](https://github.com/sektek/generator/commit/bccf71ae696b5771dfbb7ed87a77df9bfcfc00c0))
+* **generator:** CoreGenerator static prompts()/composites() defaults + shared authorPrompt ([#7](https://github.com/sektek/generator/issues/7)) ([0ee07d0](https://github.com/sektek/generator/commit/0ee07d08626cde4ed23b0980ce0d2ed7781c840a)), closes [#6](https://github.com/sektek/generator/issues/6) [#5](https://github.com/sektek/generator/issues/5)
+* **generator:** PromptBuilder ([#6](https://github.com/sektek/generator/issues/6)) ([f2f6f29](https://github.com/sektek/generator/commit/f2f6f2945848ac3e4b95ab1117fb4b65623c395a)), closes [#5](https://github.com/sektek/generator/issues/5)
+
 ## [0.3.0](https://github.com/sektek/generator/compare/v0.2.0...v0.3.0) (2026-09-07)
 
 ### Features
