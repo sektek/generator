@@ -19,4 +19,6 @@ export type PromptCapability<T = unknown> =
  * fresh `{ type: 'clearable' }` each time. A prompt needing a different
  * cleared value builds its own instead of reusing this one.
  */
-export const clearable: PromptCapability = Object.freeze({ type: 'clearable' });
+export const clearable = Object.freeze({
+  type: 'clearable',
+}) satisfies PromptCapability;
