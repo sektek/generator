@@ -198,18 +198,17 @@ describe('PromptBuilder', function () {
       expect(onlyOverrideTrue).to.equal(false);
     });
 
-    it('composes includePrompt with the seed’s via OR when combineIncludePrompt is anyOf', async function () {
+    it('composes includePrompt with the seed’s via OR when constructed with includeMode: anyOf', async function () {
       const seedWithIncludePrompt = new PromptBuilder().from(seed).create({
         includePrompt: (ctx: PromptContext) => ctx.answers.seedAnswer === true,
       });
 
-      const prompt = new PromptBuilder().from(seedWithIncludePrompt).create(
-        {
+      const prompt = new PromptBuilder({ includeMode: anyOf })
+        .from(seedWithIncludePrompt)
+        .create({
           includePrompt: (ctx: PromptContext) =>
             ctx.answers.overrideAnswer === true,
-        },
-        anyOf,
-      );
+        });
 
       const bothTrue = await Promise.resolve(
         includePrompt(prompt, {
