@@ -164,7 +164,7 @@ describe('PromptBuilder', function () {
       expect(prompt.capabilities).to.equal(capabilities);
     });
 
-    it('composes includePrompt with the seed’s via AND by default, rather than replacing it', async function () {
+    it('composes includePrompt with the seed’s via AND (allOf) by default, rather than replacing it', async function () {
       const seedWithIncludePrompt = new PromptBuilder().from(seed).create({
         includePrompt: (ctx: PromptContext) => ctx.answers.seedAnswer === true,
       });
@@ -241,7 +241,7 @@ describe('PromptBuilder', function () {
       expect(neitherTrue).to.equal(false);
     });
 
-    it('provider plainly replaces the seed’s by default, rather than falling back to it', async function () {
+    it('provider plainly replaces the seed’s provider by default, rather than falling back to it', async function () {
       const seedWithProvider = new PromptBuilder()
         .from(seed)
         .create({ provider: () => 'seed value' });
