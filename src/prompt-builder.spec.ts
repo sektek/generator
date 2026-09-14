@@ -38,7 +38,8 @@ describe('PromptBuilder', function () {
       const prompt = new PromptBuilder().create({
         name: 'author',
         type: 'text',
-        message: 'Author',
+        label: 'Author',
+        hint: 'Used in package.json and license files',
         provider,
         includePrompt: includePromptFn,
         capabilities,
@@ -46,17 +47,28 @@ describe('PromptBuilder', function () {
 
       expect(prompt.name).to.equal('author');
       expect(prompt.type).to.equal('text');
-      expect(prompt.message).to.equal('Author');
+      expect(prompt.label).to.equal('Author');
+      expect(prompt.hint).to.equal('Used in package.json and license files');
       expect(prompt.provider).to.equal(provider);
       expect(prompt.includePrompt).to.equal(includePromptFn);
       expect(prompt.capabilities).to.equal(capabilities);
+    });
+
+    it('defaults hint to undefined', function () {
+      const prompt = new PromptBuilder().create({
+        name: 'author',
+        type: 'text',
+        label: 'Author',
+      });
+
+      expect(prompt.hint).to.equal(undefined);
     });
 
     it('defaults provider to a function resolving undefined', async function () {
       const prompt = new PromptBuilder().create({
         name: 'author',
         type: 'text',
-        message: 'Author',
+        label: 'Author',
       });
 
       await expect(
@@ -68,7 +80,7 @@ describe('PromptBuilder', function () {
       const prompt = new PromptBuilder().create({
         name: 'author',
         type: 'text',
-        message: 'Author',
+        label: 'Author',
       });
 
       await expect(
@@ -80,7 +92,7 @@ describe('PromptBuilder', function () {
       const prompt = new PromptBuilder().create({
         name: 'author',
         type: 'text',
-        message: 'Author',
+        label: 'Author',
       });
 
       expect(prompt.capabilities).to.deep.equal([]);
@@ -93,7 +105,7 @@ describe('PromptBuilder', function () {
       new PromptBuilder().create({
         name: 'author',
         type: 'text',
-        message: 'Author',
+        label: 'Author',
         provider,
         includePrompt: includePromptFn,
       });
@@ -102,10 +114,10 @@ describe('PromptBuilder', function () {
       expect(includePromptFn).not.to.have.been.called;
     });
 
-    it('throws when name, type, or message is missing and there is no seed', function () {
+    it('throws when name, type, or label is missing and there is no seed', function () {
       expect(() =>
-        new PromptBuilder().create({ type: 'text', message: 'Author' }),
-      ).to.throw(/requires name, type, and message/);
+        new PromptBuilder().create({ type: 'text', label: 'Author' }),
+      ).to.throw(/requires name, type, and label/);
     });
   });
 
@@ -116,7 +128,7 @@ describe('PromptBuilder', function () {
       seed = new PromptBuilder().create({
         name: 'author',
         type: 'text',
-        message: 'Author',
+        label: 'Author',
       });
     });
 
@@ -126,21 +138,23 @@ describe('PromptBuilder', function () {
       expect(prompt).to.deep.equal(seed);
     });
 
-    it('plainly replaces name/type/message/provider/capabilities on override', function () {
+    it('plainly replaces name/type/label/hint/provider/capabilities on override', function () {
       const provider = sinon.stub();
       const capabilities = [{ type: 'clearable' as const }];
 
       const prompt = new PromptBuilder().from(seed).create({
         name: 'license-author',
         type: 'select',
-        message: 'License author',
+        label: 'License author',
+        hint: 'Defaults to the package author',
         provider,
         capabilities,
       });
 
       expect(prompt.name).to.equal('license-author');
       expect(prompt.type).to.equal('select');
-      expect(prompt.message).to.equal('License author');
+      expect(prompt.label).to.equal('License author');
+      expect(prompt.hint).to.equal('Defaults to the package author');
       expect(prompt.provider).to.equal(provider);
       expect(prompt.capabilities).to.equal(capabilities);
     });

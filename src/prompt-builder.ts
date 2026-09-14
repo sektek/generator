@@ -4,7 +4,7 @@ import { Prompt } from './types/prompt.js';
 
 /**
  * Builds `Prompt`s, filling in a default for every field beyond
- * `name`/`type`/`message`. Not backed by utility-belt's `ObjectBuilder` the
+ * `name`/`type`/`label`. Not backed by utility-belt's `ObjectBuilder` the
  * way synaptik's `EventBuilder` is: `ObjectBuilder`'s default-filling
  * treats a Function override as something to invoke immediately, but
  * `provider`/`includePrompt` need to be stored as real functions and
@@ -36,7 +36,7 @@ export class PromptBuilder {
    * seed and `init` supply one, the result requires both (an
    * `AllPredicate`) rather than `init`'s replacing the seed's.
    *
-   * `name`/`type`/`message` are only actually required when there's no
+   * `name`/`type`/`label` are only actually required when there's no
    * seed — enforced at runtime, not in `init`'s type, since a stricter
    * type here would also reject `.from(prompt).create({})` omitting them
    * to inherit from the seed. See `PromptInit` for the no-seed-required
@@ -49,18 +49,19 @@ export class PromptBuilder {
     const seed = this.#seed;
     const name = init.name ?? seed?.name;
     const type = init.type ?? seed?.type;
-    const message = init.message ?? seed?.message;
+    const label = init.label ?? seed?.label;
 
-    if (!name || !type || !message) {
+    if (!name || !type || !label) {
       throw new Error(
-        'PromptBuilder.create() requires name, type, and message, either directly or from a seed prompt (see from()).',
+        'PromptBuilder.create() requires name, type, and label, either directly or from a seed prompt (see from()).',
       );
     }
 
     return {
       name,
       type,
-      message,
+      label,
+      hint: init.hint ?? seed?.hint,
       provider: init.provider ?? seed?.provider ?? (() => undefined),
       includePrompt: this.#resolveIncludePrompt(init, seed),
       capabilities: init.capabilities ?? seed?.capabilities ?? [],
