@@ -6,12 +6,6 @@ import {
   setGitConfigReaderForTesting,
 } from './git-identity.js';
 
-/**
- * Installs a fake reader answering from `values`. Restoration is handled
- * by the suite's own `afterEach` below, not by this function.
- *
- * @param values - The `user.name`/`user.email` values to answer with.
- */
 function stubGitConfig(values: Record<string, string>) {
   setGitConfigReaderForTesting(async key => values[key]);
 }

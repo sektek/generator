@@ -45,13 +45,7 @@ const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
 // shape, which isn't part of this package's public dependency surface.
 type GeneratorConstructorRef = { Generator: unknown; path: string };
 
-/**
- * One entry in a generator's `composites()` — the sub-generator name
- * (as passed to `composeWith`) paired with its class, so the same list
- * drives both `taskInitializing`'s actual composition and `prompts()`'s
- * static discovery of that sub-generator's own prompts, without a live
- * instance of either side.
- */
+/** One entry in a generator's `composites()`: a sub-generator's name paired with its class. */
 export type Composite = {
   name: string;
   generatorClass: Constructor<
@@ -67,11 +61,7 @@ export abstract class CoreGenerator<
   package: string | null = null;
 
   /**
-   * This generator's own prompts, recursively including whatever it
-   * composes with (see `composites()`). Static and side-effect-free so gen
-   * can discover them without instantiating anything or needing a live
-   * `Environment`. Defaults to none; override in a subclass that actually
-   * has prompts to ask.
+   * This generator's own prompts, including whatever it composes with.
    *
    * @returns This generator's prompts.
    */
@@ -81,10 +71,6 @@ export abstract class CoreGenerator<
 
   /**
    * The sub-generators this generator composes with, by name and class.
-   * The single source of truth `taskInitializing` and `prompts()` should
-   * both read from, so there's exactly one place naming what a generator
-   * composes with. Defaults to none; override in a subclass that actually
-   * composes with others.
    *
    * @returns This generator's composed sub-generators.
    */
