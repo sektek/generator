@@ -9,8 +9,8 @@ import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
+import { PromptBuilder, fallbackProvider } from './prompt-builder.js';
 import { Prompt } from './types/prompt.js';
-import { PromptBuilder } from './prompt-builder.js';
 import { PromptContext } from './types/prompt-context.js';
 
 use(chaiAsPromised);
@@ -239,6 +239,41 @@ describe('PromptBuilder', function () {
       expect(onlySeedTrue).to.equal(true);
       expect(onlyOverrideTrue).to.equal(true);
       expect(neitherTrue).to.equal(false);
+    });
+
+    it('provider plainly replaces the seed’s by default, rather than falling back to it', async function () {
+      const seedWithProvider = new PromptBuilder()
+        .from(seed)
+        .create({ provider: () => 'seed value' });
+
+      const prompt = new PromptBuilder()
+        .from(seedWithProvider)
+        .create({ provider: () => 'override value' });
+
+      expect(await provide(prompt, context)).to.equal('override value');
+    });
+
+    it('falls back to the seed’s provider when constructed with provideMode: fallbackProvider', async function () {
+      const seedWithProvider = new PromptBuilder()
+        .from(seed)
+        .create({ provider: () => 'seed value' });
+
+      // A plain closure, not a sinon stub: stubs have their own built-in
+      // .get() method (for stubbing property getters elsewhere in sinon's
+      // API), which collides with getComponent's 'get' duck-typing and
+      // gets resolved instead of the stub itself.
+      let calls = 0;
+      const optionalOverride = async () => {
+        calls += 1;
+        return calls === 1 ? 'override value' : undefined;
+      };
+
+      const prompt = new PromptBuilder({ provideMode: fallbackProvider })
+        .from(seedWithProvider)
+        .create({ provider: optionalOverride });
+
+      expect(await provide(prompt, context)).to.equal('override value');
+      expect(await provide(prompt, context)).to.equal('seed value');
     });
   });
 });
