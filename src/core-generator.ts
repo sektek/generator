@@ -1,8 +1,8 @@
 import { basename } from 'node:path';
 
+import { Constructor } from '@sektek/utility-belt';
 import Generator from 'yeoman-generator/typed';
 
-import { Constructor } from './types/constructor.js';
 import { CoreConfig } from './types/core-config.js';
 import { CoreFeatures } from './types/core-features.js';
 import { CoreOptions } from './types/core-options.js';
