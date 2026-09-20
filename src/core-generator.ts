@@ -1,6 +1,5 @@
 import { basename } from 'node:path';
 
-import { Constructor } from '@sektek/utility-belt';
 import Generator from 'yeoman-generator/typed';
 
 import { CoreConfig } from './types/core-config.js';
@@ -45,14 +44,6 @@ const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
 // shape, which isn't part of this package's public dependency surface.
 type GeneratorConstructorRef = { Generator: unknown; path: string };
 
-/** One entry in a generator's `composites()`: a sub-generator's name paired with its class. */
-export type Composite = {
-  name: string;
-  generatorClass: Constructor<
-    CoreGenerator<CoreConfig, CoreOptions, CoreFeatures>
-  >;
-};
-
 /**
  * What any `CoreGenerator` subclass exposes statically — `prompts()`/
  * `composites()`, the two static methods callable on the class itself with
@@ -62,11 +53,25 @@ export type Composite = {
  * three config/options/features type params, so its static side isn't a
  * single concrete type a caller who never instantiates the class (e.g. a
  * dynamic `import()` reading just these two methods) can reasonably name
- * — this shape is all such a caller actually needs.
+ * — this shape is all such a caller actually needs. Deliberately *not*
+ * `Constructor<CoreGenerator<...>>`-ish (constructible): nothing in this
+ * workspace ever calls `new` on a `Composite.generatorClass` or an
+ * `import()`-ed generator module's default export — every real usage
+ * (`GitGenerator.prompts()`'s own composed-generator aggregation, `tools/
+ * gen`'s registry) only ever reads these two static methods, so adding
+ * constructibility here would claim a capability nothing actually needs,
+ * and would force naming `CoreGenerator`'s three type params right back —
+ * exactly what this type exists to avoid.
  */
 export type GeneratorClass = {
   prompts(): Prompt[];
   composites(): Composite[];
+};
+
+/** One entry in a generator's `composites()`: a sub-generator's name paired with its class. */
+export type Composite = {
+  name: string;
+  generatorClass: GeneratorClass;
 };
 
 /**
