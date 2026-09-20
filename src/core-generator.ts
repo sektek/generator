@@ -89,15 +89,9 @@ export abstract class CoreGenerator<
 
   /**
    * This generator's own prompts, including whatever it composes with.
-   * Defaults to flattening every composed sub-generator's own `prompts()`
-   * (via `this.composites()` — polymorphic, so this resolves against
-   * whichever subclass `prompts()` was actually called on, the same as any
-   * other inherited static method), which is already the right answer for
-   * a generator whose *only* prompts are the ones it composes with —
-   * override only when there's more to it: prompts of its own to add
-   * (e.g. `LicenseGenerator`'s `authorPrompt`), or conditional gating to
-   * layer onto a composed generator's prompts (e.g. `GitGenerator` gating
-   * `github`'s prompts on its own `gitInit` answer).
+   * Defaults to flattening every composed sub-generator's own `prompts()` —
+   * override only when this generator adds prompts of its own, or needs to
+   * gate a composed generator's prompts conditionally.
    *
    * @returns This generator's prompts.
    */

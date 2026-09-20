@@ -48,8 +48,6 @@ describe('CoreGenerator', function () {
     });
 
     it("defaults to flattening every composite's own prompts(), for a subclass that only overrides composites()", function () {
-      // ComposerGenerator never overrides prompts() itself — this exercises
-      // the inherited default's polymorphic `this.composites()` call.
       expect(ComposerGenerator.prompts()).to.deep.equal([FAKE_PROMPT]);
     });
   });
