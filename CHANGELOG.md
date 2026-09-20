@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.0](https://github.com/sektek/generator/compare/v0.4.0...v0.5.0) (2026-09-20)
+
+### Features
+
+* **generator:** export GeneratorClass/GeneratorModule types ([#10](https://github.com/sektek/generator/issues/10)) ([585596f](https://github.com/sektek/generator/commit/585596f7a0c646f5c81dd904c25c7f8dcf6a7375))
+
 ## [0.4.0](https://github.com/sektek/generator/compare/v0.3.0...v0.4.0) (2026-09-14)
 
 ### Features
