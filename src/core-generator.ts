@@ -1,5 +1,6 @@
 import { basename } from 'node:path';
 
+import { Constructor } from '@sektek/utility-belt';
 import Generator from 'yeoman-generator/typed';
 
 import { CoreConfig } from './types/core-config.js';
@@ -54,14 +55,16 @@ type GeneratorConstructorRef = { Generator: unknown; path: string };
  * single concrete type a caller who never instantiates the class (e.g. a
  * dynamic `import()` reading just these two methods) can reasonably name
  * — this shape is all such a caller actually needs. Deliberately *not*
- * `Constructor<CoreGenerator<...>>`-ish (constructible): nothing in this
- * workspace ever calls `new` on a `Composite.generatorClass` or an
- * `import()`-ed generator module's default export — every real usage
- * (`GitGenerator.prompts()`'s own composed-generator aggregation, `tools/
- * gen`'s registry) only ever reads these two static methods, so adding
- * constructibility here would claim a capability nothing actually needs,
- * and would force naming `CoreGenerator`'s three type params right back —
- * exactly what this type exists to avoid.
+ * `Constructor<CoreGenerator<...>>`-ish (constructible) itself: nothing in
+ * this workspace ever calls `new` on an `import()`-ed generator module's
+ * default export — `tools/gen`'s registry (this type's actual reason for
+ * existing) only ever reads these two static methods. `Composite`'s own
+ * `generatorClass` field below intersects this with `Constructor<...>`
+ * instead of using it bare, since that field *was* already publicly
+ * constructible (this package's own `index.ts` re-exports `Composite`) —
+ * narrowing it would be a breaking change for any external consumer that
+ * relied on that, however unlikely, for no real benefit to the one thing
+ * this type exists to unblock.
  */
 export type GeneratorClass = {
   prompts(): Prompt[];
@@ -71,7 +74,8 @@ export type GeneratorClass = {
 /** One entry in a generator's `composites()`: a sub-generator's name paired with its class. */
 export type Composite = {
   name: string;
-  generatorClass: GeneratorClass;
+  generatorClass: GeneratorClass &
+    Constructor<CoreGenerator<CoreConfig, CoreOptions, CoreFeatures>>;
 };
 
 /**
