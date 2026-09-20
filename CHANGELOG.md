@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.0](https://github.com/sektek/generator/compare/v0.5.0...v0.6.0) (2026-09-20)
+
+### Features
+
+* **generator:** default prompts() to aggregating composites() ([#11](https://github.com/sektek/generator/issues/11)) ([d538149](https://github.com/sektek/generator/commit/d53814962721c6de1bb4a32a16adc0832fc1a8c2)), closes [gen#16](https://github.com/sektek/gen/issues/16)
+
 ## [0.5.0](https://github.com/sektek/generator/compare/v0.4.0...v0.5.0) (2026-09-20)
 
 ### Features
