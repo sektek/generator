@@ -45,12 +45,39 @@ const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
 // shape, which isn't part of this package's public dependency surface.
 type GeneratorConstructorRef = { Generator: unknown; path: string };
 
+/**
+ * A `CoreGenerator` subclass, by its full contract: constructible (like any
+ * class), plus the two static methods callable on the class itself with no
+ * instantiation (`prompts()`/`composites()` — see `CoreGenerator`'s own doc
+ * comments). Not `typeof CoreGenerator` itself: `CoreGenerator` is abstract
+ * and generic over its three config/options/features type params, so its
+ * static side isn't a single concrete type a generic reference like this
+ * can name directly — `Constructor<CoreGenerator<CoreConfig, CoreOptions,
+ * CoreFeatures>>` (the base, unparameterized instance shape) plus the
+ * static-methods shape is the closest structural equivalent.
+ */
+export type GeneratorClass = Constructor<
+  CoreGenerator<CoreConfig, CoreOptions, CoreFeatures>
+> & {
+  prompts(): Prompt[];
+  composites(): Composite[];
+};
+
 /** One entry in a generator's `composites()`: a sub-generator's name paired with its class. */
 export type Composite = {
   name: string;
-  generatorClass: Constructor<
-    CoreGenerator<CoreConfig, CoreOptions, CoreFeatures>
-  >;
+  generatorClass: GeneratorClass;
+};
+
+/**
+ * The shape of a dynamically `import()`-ed generator module — every
+ * generator in this workspace follows the `export default SomeGenerator;`
+ * convention (Yeoman's own `generators/<name>/index.js` discovery
+ * convention), so a caller reading `.default` off the imported module gets
+ * a `GeneratorClass`.
+ */
+export type GeneratorModule = {
+  default: GeneratorClass;
 };
 
 export abstract class CoreGenerator<
