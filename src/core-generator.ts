@@ -46,36 +46,25 @@ const PRIORITY_ALIASES: { priorityName: string; queueName: string }[] = [
 type GeneratorConstructorRef = { Generator: unknown; path: string };
 
 /**
- * What any `CoreGenerator` subclass exposes statically — `prompts()`/
- * `composites()`, the two static methods callable on the class itself with
- * no instantiation (see `CoreGenerator`'s own doc comments). Typed
- * narrowly, as a plain structural shape, rather than as
- * `typeof CoreGenerator`: `CoreGenerator` is abstract and generic over its
- * three config/options/features type params, so its static side isn't a
- * single concrete type a caller who never instantiates the class (e.g. a
- * dynamic `import()` reading just these two methods) can reasonably name
- * — this shape is all such a caller actually needs. Deliberately *not*
- * `Constructor<CoreGenerator<...>>`-ish (constructible) itself: nothing in
- * this workspace ever calls `new` on an `import()`-ed generator module's
- * default export — `tools/gen`'s registry (this type's actual reason for
- * existing) only ever reads these two static methods. `Composite`'s own
- * `generatorClass` field below intersects this with `Constructor<...>`
- * instead of using it bare, since that field *was* already publicly
- * constructible (this package's own `index.ts` re-exports `Composite`) —
- * narrowing it would be a breaking change for any external consumer that
- * relied on that, however unlikely, for no real benefit to the one thing
- * this type exists to unblock.
+ * A `CoreGenerator` subclass, by its full contract: constructible (like any
+ * class), plus the two static methods callable on the class itself with no
+ * instantiation (`prompts()`/`composites()` — see `CoreGenerator`'s own doc
+ * comments). Not `typeof CoreGenerator` itself: `CoreGenerator` is abstract
+ * and generic over its three config/options/features type params, so its
+ * static side isn't a single concrete type a generic reference like this
+ * can name directly — `Constructor<CoreGenerator<CoreConfig, CoreOptions,
+ * CoreFeatures>>` (the base, unparameterized instance shape) plus the
+ * static-methods shape is the closest structural equivalent.
  */
 export type GeneratorClass = {
   prompts(): Prompt[];
   composites(): Composite[];
-};
+} & Constructor<CoreGenerator<CoreConfig, CoreOptions, CoreFeatures>>;
 
 /** One entry in a generator's `composites()`: a sub-generator's name paired with its class. */
 export type Composite = {
   name: string;
-  generatorClass: GeneratorClass &
-    Constructor<CoreGenerator<CoreConfig, CoreOptions, CoreFeatures>>;
+  generatorClass: GeneratorClass;
 };
 
 /**
