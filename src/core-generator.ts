@@ -56,10 +56,12 @@ type GeneratorConstructorRef = { Generator: unknown; path: string };
  * CoreFeatures>>` (the base, unparameterized instance shape) plus the
  * static-methods shape is the closest structural equivalent.
  */
-export type GeneratorClass = {
+export type GeneratorClass = Constructor<
+  CoreGenerator<CoreConfig, CoreOptions, CoreFeatures>
+> & {
   prompts(): Prompt[];
   composites(): Composite[];
-} & Constructor<CoreGenerator<CoreConfig, CoreOptions, CoreFeatures>>;
+};
 
 /** One entry in a generator's `composites()`: a sub-generator's name paired with its class. */
 export type Composite = {
