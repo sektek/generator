@@ -53,6 +53,33 @@ export type Composite = {
   >;
 };
 
+/**
+ * What any `CoreGenerator` subclass exposes statically — `prompts()`/
+ * `composites()`, the two static methods callable on the class itself with
+ * no instantiation (see `CoreGenerator`'s own doc comments). Typed
+ * narrowly, as a plain structural shape, rather than as
+ * `typeof CoreGenerator`: `CoreGenerator` is abstract and generic over its
+ * three config/options/features type params, so its static side isn't a
+ * single concrete type a caller who never instantiates the class (e.g. a
+ * dynamic `import()` reading just these two methods) can reasonably name
+ * — this shape is all such a caller actually needs.
+ */
+export type GeneratorClass = {
+  prompts(): Prompt[];
+  composites(): Composite[];
+};
+
+/**
+ * The shape of a dynamically `import()`-ed generator module — every
+ * generator in this workspace follows the `export default SomeGenerator;`
+ * convention (Yeoman's own `generators/<name>/index.js` discovery
+ * convention), so a caller reading `.default` off the imported module gets
+ * a `GeneratorClass`.
+ */
+export type GeneratorModule = {
+  default: GeneratorClass;
+};
+
 export abstract class CoreGenerator<
   C extends CoreConfig,
   O extends CoreOptions,
