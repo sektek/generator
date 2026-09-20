@@ -89,11 +89,16 @@ export abstract class CoreGenerator<
 
   /**
    * This generator's own prompts, including whatever it composes with.
+   * Defaults to flattening every composed sub-generator's own `prompts()` —
+   * override only when this generator adds prompts of its own, or needs to
+   * gate a composed generator's prompts conditionally.
    *
    * @returns This generator's prompts.
    */
   static prompts(): Prompt[] {
-    return [];
+    return this.composites().flatMap(({ generatorClass }) =>
+      generatorClass.prompts(),
+    );
   }
 
   /**
