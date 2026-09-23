@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.0](https://github.com/sektek/generator/compare/v0.6.0...v0.7.0) (2026-09-23)
+
+### Features
+
+* **generator:** DestinationMode type + CoreGenerator.destinationMode() static ([#12](https://github.com/sektek/generator/issues/12)) ([1e7e5f2](https://github.com/sektek/generator/commit/1e7e5f29e4e281b2e1e049c8bbe1d4561549ea99))
+* **generator:** projectNamePrompt provider implements workspace-prefix fallback chain ([#14](https://github.com/sektek/generator/issues/14)) ([20c59f0](https://github.com/sektek/generator/commit/20c59f02bd2c5003e128a3d4eb937871d537390c))
+* **generator:** PromptContext gains configDefaults + workspace fields ([#13](https://github.com/sektek/generator/issues/13)) ([0333b2e](https://github.com/sektek/generator/commit/0333b2e14cad1fafdd7ce73423e0fe0545a915fc))
+
 ## [0.6.0](https://github.com/sektek/generator/compare/v0.5.0...v0.6.0) (2026-09-20)
 
 ### Features
