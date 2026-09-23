@@ -41,6 +41,16 @@ class ComposerGenerator extends CoreGenerator<
   }
 }
 
+class NewProjectDirGenerator extends CoreGenerator<
+  CoreConfig,
+  CoreOptions,
+  CoreFeatures
+> {
+  static destinationMode() {
+    return { kind: 'newProjectDir' as const, subdir: 'libs' };
+  }
+}
+
 describe('CoreGenerator', function () {
   describe('prompts()', function () {
     it('defaults to no prompts, for a subclass that declares none', function () {
@@ -55,6 +65,21 @@ describe('CoreGenerator', function () {
   describe('composites()', function () {
     it('defaults to no composed generators, for a subclass that composes with none', function () {
       expect(TestGenerator.composites()).to.deep.equal([]);
+    });
+  });
+
+  describe('destinationMode()', function () {
+    it('defaults to { kind: "inPlace" }, for a subclass that declares none', function () {
+      expect(TestGenerator.destinationMode()).to.deep.equal({
+        kind: 'inPlace',
+      });
+    });
+
+    it('is read from a subclass that overrides it', function () {
+      expect(NewProjectDirGenerator.destinationMode()).to.deep.equal({
+        kind: 'newProjectDir',
+        subdir: 'libs',
+      });
     });
   });
 });

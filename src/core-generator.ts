@@ -6,6 +6,7 @@ import Generator from 'yeoman-generator/typed';
 import { CoreConfig } from './types/core-config.js';
 import { CoreFeatures } from './types/core-features.js';
 import { CoreOptions } from './types/core-options.js';
+import { DestinationMode } from './types/destination-mode.js';
 import { Prompt } from './types/prompt.js';
 
 const DEFAULT_OPTIONS: Partial<CoreOptions> = {
@@ -61,6 +62,7 @@ export type GeneratorClass = Constructor<
 > & {
   prompts(): Prompt[];
   composites(): Composite[];
+  destinationMode(): DestinationMode;
 };
 
 /** One entry in a generator's `composites()`: a sub-generator's name paired with its class. */
@@ -108,6 +110,23 @@ export abstract class CoreGenerator<
    */
   static composites(): Composite[] {
     return [];
+  }
+
+  /**
+   * Where this generator scaffolds into, read once by `tools/gen` before
+   * `Environment.run()` — never re-decided per composed sub-generator.
+   * Composition doesn't need per-level destination logic: Yeoman resolves
+   * `destinationRoot()` once per run, before any composed sub-generator's
+   * tasks execute, and every sub-generator inherits it. Defaults to
+   * `{ kind: 'inPlace' }` — right for a generator that adds to whatever
+   * directory it's run in (`readme`, `editorconfig`, ...); only a generator
+   * that names a fresh project directory (`app`, `workspace`) needs to
+   * override this.
+   *
+   * @returns This generator's destination mode.
+   */
+  static destinationMode(): DestinationMode {
+    return { kind: 'inPlace' };
   }
 
   constructor(args: string[], options: O, features?: F) {
