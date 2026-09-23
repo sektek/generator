@@ -2,17 +2,6 @@ import { PromptBuilder } from './prompt-builder.js';
 import { PromptContext } from './types/prompt-context.js';
 import { randomProjectName } from './project-name/index.js';
 
-/**
- * The prefix source for a fresh generated name, in priority order:
- * `configDefaults.projectName` (an explicit, hand-set `gen.config.*`
- * override) first, then `workspace?.name` (the ancestor workspace's
- * `package.json` name, filesystem-detected by `tools/gen`'s
- * `findWorkspaceRoot()`). `undefined` when neither applies — a plain
- * generated name with no prefix.
- *
- * @param context - This run's `PromptContext`.
- * @returns The prefix to prepend, if any.
- */
 function prefixFor(context: PromptContext): string | undefined {
   const { projectName } = context.configDefaults;
   if (typeof projectName === 'string' && projectName !== '') {
