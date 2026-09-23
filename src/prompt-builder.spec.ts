@@ -16,7 +16,11 @@ import { PromptContext } from './types/prompt-context.js';
 use(chaiAsPromised);
 use(sinonChai);
 
-const context: PromptContext = { answers: {}, flagsGiven: {} };
+const context: PromptContext = {
+  answers: {},
+  flagsGiven: {},
+  configDefaults: {},
+};
 
 const includePrompt = (prompt: Prompt, ctx: PromptContext) => {
   const test: PredicateFn<PromptContext> = getComponent(
@@ -178,18 +182,21 @@ describe('PromptBuilder', function () {
         includePrompt(prompt, {
           answers: { seedAnswer: true, overrideAnswer: true },
           flagsGiven: {},
+          configDefaults: {},
         }),
       );
       const onlySeedTrue = await Promise.resolve(
         includePrompt(prompt, {
           answers: { seedAnswer: true, overrideAnswer: false },
           flagsGiven: {},
+          configDefaults: {},
         }),
       );
       const onlyOverrideTrue = await Promise.resolve(
         includePrompt(prompt, {
           answers: { seedAnswer: false, overrideAnswer: true },
           flagsGiven: {},
+          configDefaults: {},
         }),
       );
 
@@ -214,24 +221,28 @@ describe('PromptBuilder', function () {
         includePrompt(prompt, {
           answers: { seedAnswer: true, overrideAnswer: true },
           flagsGiven: {},
+          configDefaults: {},
         }),
       );
       const onlySeedTrue = await Promise.resolve(
         includePrompt(prompt, {
           answers: { seedAnswer: true, overrideAnswer: false },
           flagsGiven: {},
+          configDefaults: {},
         }),
       );
       const onlyOverrideTrue = await Promise.resolve(
         includePrompt(prompt, {
           answers: { seedAnswer: false, overrideAnswer: true },
           flagsGiven: {},
+          configDefaults: {},
         }),
       );
       const neitherTrue = await Promise.resolve(
         includePrompt(prompt, {
           answers: { seedAnswer: false, overrideAnswer: false },
           flagsGiven: {},
+          configDefaults: {},
         }),
       );
 
