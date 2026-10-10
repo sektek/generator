@@ -1,5 +1,6 @@
 import {
   PredicateFn,
+  ProviderComponent,
   ProviderFn,
   anyOf,
   getComponent,
@@ -177,6 +178,31 @@ describe('PromptBuilder', function () {
 
       expect(prompt.choices).to.deep.equal(['a', 'b']);
       expect(prompt.required).to.equal(true);
+    });
+
+    it('preserves and carries over a choices provider', async function () {
+      const choices = (context: PromptContext) =>
+        context.answers.language === 'typescript' ? ['vitest'] : ['mocha'];
+      const seed = new PromptBuilder().create({
+        name: 'n',
+        type: 'select',
+        label: 'l',
+        choices,
+      });
+      const prompt = new PromptBuilder().from(seed).create({});
+
+      expect(prompt.choices).to.equal(choices);
+      const get: ProviderFn<readonly string[], PromptContext> = getComponent(
+        prompt.choices as ProviderComponent<readonly string[], PromptContext>,
+        'get',
+      );
+      expect(
+        await get({
+          answers: { language: 'typescript' },
+          flagsGiven: {},
+          configDefaults: {},
+        }),
+      ).to.deep.equal(['vitest']);
     });
 
     it('plainly replaces choices and required on override', function () {
