@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.0](https://github.com/sektek/generator/compare/v0.8.0...v0.9.0) (2026-10-10)
+
+### Features
+
+* **generator:** shared descriptionPrompt ([#18](https://github.com/sektek/generator/issues/18)) ([a0ad0e9](https://github.com/sektek/generator/commit/a0ad0e9e703397e2e32d7539777c6180ddcd9be6))
+
 ## [0.8.0](https://github.com/sektek/generator/compare/v0.7.0...v0.8.0) (2026-10-10)
 
 ### Features
