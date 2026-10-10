@@ -121,6 +121,8 @@ export class PromptBuilder {
       provider: this.#resolveProvider(init, seed),
       includePrompt: this.#resolveIncludePrompt(init, seed),
       capabilities: init.capabilities ?? seed?.capabilities ?? [],
+      choices: init.choices ?? seed?.choices,
+      required: init.required ?? seed?.required ?? false,
     };
   }
 
