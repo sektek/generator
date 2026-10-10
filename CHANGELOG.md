@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/sektek/generator/compare/v0.7.0...v0.8.0) (2026-10-10)
+
+### Features
+
+* **generator:** Prompt gains choices and required fields ([#17](https://github.com/sektek/generator/issues/17)) ([e3b2f7b](https://github.com/sektek/generator/commit/e3b2f7bce6fda2ab5dce17a20edbd3ab0903db48))
+* **generator:** shared profilePrompt ([#16](https://github.com/sektek/generator/issues/16)) ([1166feb](https://github.com/sektek/generator/commit/1166feb28878a73d38cf77f471b3eb63ca6945ec))
+
 ## [0.7.0](https://github.com/sektek/generator/compare/v0.6.0...v0.7.0) (2026-09-23)
 
 ### Features
