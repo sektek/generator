@@ -24,6 +24,10 @@ export type Prompt = {
   /** Whether this prompt should be asked at all, given answers so far. */
   includePrompt: PredicateComponent<PromptContext>;
   capabilities: PromptCapability[];
+  /** The options a `select` prompt offers; unset for every other prompt type. */
+  choices?: readonly string[];
+  /** Whether an answer must be provided; the builder defaults this to `false`. */
+  required?: boolean;
 };
 
 /**

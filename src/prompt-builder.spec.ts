@@ -97,6 +97,30 @@ describe('PromptBuilder', function () {
       ).to.eventually.equal(true);
     });
 
+    it('defaults required to false and choices to undefined', function () {
+      const prompt = new PromptBuilder().create({
+        name: 'n',
+        type: 'text',
+        label: 'l',
+      });
+
+      expect(prompt.required).to.equal(false);
+      expect(prompt.choices).to.be.undefined;
+    });
+
+    it('preserves explicit choices and required', function () {
+      const prompt = new PromptBuilder().create({
+        name: 'n',
+        type: 'select',
+        label: 'l',
+        choices: ['a', 'b'],
+        required: true,
+      });
+
+      expect(prompt.choices).to.deep.equal(['a', 'b']);
+      expect(prompt.required).to.equal(true);
+    });
+
     it('defaults capabilities to an empty array', function () {
       const prompt = new PromptBuilder().create({
         name: 'author',
@@ -139,6 +163,36 @@ describe('PromptBuilder', function () {
         type: 'text',
         label: 'Author',
       });
+    });
+
+    it('carries choices and required over from the seed', function () {
+      const seed = new PromptBuilder().create({
+        name: 'n',
+        type: 'select',
+        label: 'l',
+        choices: ['a', 'b'],
+        required: true,
+      });
+      const prompt = new PromptBuilder().from(seed).create({});
+
+      expect(prompt.choices).to.deep.equal(['a', 'b']);
+      expect(prompt.required).to.equal(true);
+    });
+
+    it('plainly replaces choices and required on override', function () {
+      const seed = new PromptBuilder().create({
+        name: 'n',
+        type: 'select',
+        label: 'l',
+        choices: ['a', 'b'],
+        required: true,
+      });
+      const prompt = new PromptBuilder()
+        .from(seed)
+        .create({ choices: ['c'], required: false });
+
+      expect(prompt.choices).to.deep.equal(['c']);
+      expect(prompt.required).to.equal(false);
     });
 
     it('inherits every field from the seed when init omits them', function () {
