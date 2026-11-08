@@ -24,4 +24,11 @@ export type PromptContext = {
    * generator has no `subdir` to match against.
    */
   workspace?: { root: string; name: string };
+  /**
+   * The full namespace of the generator the user requested (e.g.
+   * `@sektek/base:devcontainer`). Supplied by the CLI, not something a
+   * `Prompt` computes itself; `undefined` when a prompt is evaluated outside
+   * one. A composed generator sees its caller's namespace, not its own.
+   */
+  generator?: string;
 };
