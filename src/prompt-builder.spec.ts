@@ -40,6 +40,24 @@ const provide = (prompt: Prompt, ctx: PromptContext) => {
 
 describe('PromptBuilder', function () {
   describe('create()', function () {
+    it('lets includePrompt read the optional generator from the context', async function () {
+      const prompt = new PromptBuilder().create({
+        name: 'devcontainerOnly',
+        type: 'text',
+        label: 'Devcontainer only',
+        includePrompt: (ctx: PromptContext) =>
+          ctx.generator === '@sektek/base:devcontainer',
+      });
+      const withGenerator: PromptContext = {
+        ...context,
+        generator: '@sektek/base:devcontainer',
+      };
+
+      expect(await Promise.resolve(includePrompt(prompt, withGenerator))).to.be
+        .true;
+      expect(await Promise.resolve(includePrompt(prompt, context))).to.be.false;
+    });
+
     it('builds a prompt from explicit fields', function () {
       const provider = sinon.stub().resolves('value');
       const includePromptFn = sinon.stub().resolves(true);
