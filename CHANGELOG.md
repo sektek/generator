@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10.0](https://github.com/sektek/generator/compare/v0.9.0...v0.10.0) (2026-11-08)
+
+### Features
+
+* **generator:** PromptContext gains an optional generator field ([#19](https://github.com/sektek/generator/issues/19)) ([ab98608](https://github.com/sektek/generator/commit/ab9860855afdcd968871af436332441a6bc2fce0))
+
 ## [0.9.0](https://github.com/sektek/generator/compare/v0.8.0...v0.9.0) (2026-10-10)
 
 ### Features
